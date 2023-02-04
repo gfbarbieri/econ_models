@@ -1,47 +1,139 @@
 import sympy as sp
 
 class Monopolist():
-    def __init__(self, a=None, b=None, c=None):
+    """ A class representing a monopolist firm.
+
+    Attributes
+    ----------
+    p : sympy.core.symbol.Symbol
+        The price symbol.
+    q : sympy.core.symbol.Symbol
+        The quantity symbol.
+    a : float or sympy.core.symbol.Symbol
+        The demand function (linear) parameter symbol, represents the intercept.
+    b : float or sympy.core.symbol.Symbol
+        The demand function (linear) parameter symbol, represents the slope.
+    c : float or sympy.core.symbol.Symbol
+        The cost function parameter symbol, represents marginal cost.
+    p_0 : sympy.core.symbol.Symbol
+        The price elasticity parameter represents the input price..
+    q_0 : sympy.core.symbol.Symbol
+        The price elasticity parameter represents the input quantity.
+
+    Parameters
+    ----------
+    a : float or sympy.core.symbol.Symbol, optional
+        The demand function parameter symbol. Defaults to None.
+    b : float or sympy.core.symbol.Symbol, optional
+        The demand function parameter symbol. Defaults to None.
+    c : float or sympy.core.symbol.Symbol, optional
+        The cost function parameter symbol. Defaults to None.
+
+    Examples
+    --------
+    """
+
+    def __init__(self, a=None, b=None, c=None, d=1):
+        """ Initialize the Monopolist class with cost and demand parameters.
+        
+        The cost and demand parameters can be set as inputs, or they can be set to default values using
+        SymPy symbols.
+    
+        Parameters
+        ----------
+        a : float or Sympy symbol, optional
+            The constant term in the demand function, by default None.
+        b : float or Sympy symbol, optional
+            The linear term in the demand function, by default None.
+        c : float or Sympy symbol, optional
+            The linear term in the cost function, by default None.
+        d : float or sympy symbol, optional
+            The polynomial term in the cost function, by default 1.
+        """
+
         # Define the price and quantity variables.
         self.p, self.q = sp.symbols('p q', real=True)
 
         # Define demand funciton parameters.
-        if a == None:
-            self.a = sp.symbols('a', real=True)
-        else:
-            self.a = a
-
-        if b == None:
-            self.b = sp.symbols('b', real=True)
-        else:
-            self.b = b
+        self.a = a or sp.symbols('a', real=True)
+        self.b = b or sp.symbols('b', real=True)
 
         # Define cost function parameters.
-        if c == None:
-            self.c = sp.symbols('c', real=True)
-        else:
-            self.c = c
+        self.c = c or sp.symbols('c', real=True)
+        self.d = d or sp.symbols('d', real=True)
 
         # Define price elasticity parameters.
         self.p_0, self.q_0 = sp.symbols('p_0 q_0', real=True)
 
     def set_demand_params(self, a, b):
+        """ Set the parameters of the demand curve.
+
+        Parameters
+        ----------
+        a : float
+            The intercept of the demand curve.
+        b : float
+            The slope of the demand curve.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        """
+    
         # Redefine demand function parameters using user defined values.
         self.a = a
         self.b = b
 
-    def set_cost_params(self, c):
+    def set_cost_params(self, c, d=1):
+        """ Set the cost parameters for the monopolist's cost function.
+        
+        Parameters
+        ----------
+        c : float or Sympy symbol, optional
+            The coefficient for the linear term in the monopolist's cost function.
+        d : float or Sympy symbol, optional
+            The coefficient for the quadratic term in the monopolist's cost function.
+    
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        """
+
         # Redefine cost function parameters using user defined values.
         self.c = c
+        self.d = d
 
     def get_demand(self, p=None, q=None, inverse=False):
+        """ This function calculates the demand for the monopolist's product given a price `p` or `q`.
         
+        Parameters
+        ----------
+        p : float or Sympy symbol, optional
+            The price of the product.
+        q : float or Sympy symbol, optional
+            The quantity of the product.
+        inverse: bool, default=False
+            A boolean whether to return the inverse demand function p(q) or q(p).
+    
+        Returns
+        -------
+        float or Sympy symbol
+            the demand for the product, calculated as either `b` - `a` * `p`
+            or inverse demand `b / `a` - 1 / `a` * `q`.
+
+        Examples
+        --------
+        """
+    
         # If no p or q parameters are passed, used the initiated values.
-        if p == None:
-            p = self.p
-        
-        if q == None:
-            q = self.q
+        p = p or self.p
+        q = q or self.q
 
         # Define market demand curve faced by the firm. For the purposes of the SymPy library,
         # market demand is defined as a homogenous equation.
@@ -55,28 +147,58 @@ class Monopolist():
 
         return demand[0]
 
-    def get_total_cost(self, c=None, q=None):
+    def get_total_cost(self, c=None, d=None, q=None):
+        """ Calculate the total cost of production for a given quantity `q`.
+        
+        Parameters
+        ----------
+        c : int or float or Sympy symbol, optional
+            The coefficient for the linear term in the monopolist's cost function.
+        d : int or float or Sympy symbol, optional
+            The coefficient for the quadratic term in the monopolist's cost function.
+        q : int or float or Sympy symbol, optional
+            The quantity of goods to be produced.
 
-        # If no q or c parameters are passed, used the initiated values.
-        if q == None:
-            q = self.q
+        Returns
+        -------
+        total_cost : int or float or Sympy symbol
+            The total cost of producing the given quantity `q`.
+
+        Examples
+        --------
+        """
     
-        if c == None:
-            c = self.c
+        # If no q, c, d parameters are passed, used the current values.
+        q = q or self.q
+        c = c or self.c
+        d = d or self.d
     
         # Define firm's total cost function.
-        total_cost = c * q
+        total_cost = c * q**d
 
         return total_cost
 
     def get_total_revenue(self, p=None, q=None):
-
-        # If no p or q parameters are passed, used the initiated values.
-        if p == None:
-            p = self.p
+        """ Calculate the total revenue of a firm for a quantity `q` at price `p`.
         
-        if q == None:
-            q = self.q
+        Parameters
+        ----------
+        p : int or float or Sympy symbol, optional
+            The price of the product.
+        q : int or float or Sympy symbol, optional
+            The quantity of goods to be produced.
+
+        Returns
+        -------
+        total_revenue : int or float or Sympy symbol
+            The total revenue of producing the given quantity `q` at price `p`.
+        
+        Examples
+        --------
+        """
+        # If no p or q parameters are passed, used the current values.
+        p = p or self.p
+        q = q or self.q
 
         # Define firm's total revenue function.
         total_revenue = p*q
@@ -84,9 +206,8 @@ class Monopolist():
         return total_revenue
 
     def get_marginal_revenue(self, p=None):
-        # If no p or q parameters are passed, used the initiated values.
-        if p == None:
-            p = self.p
+        # If no p or q parameters are passed, used the current values.
+        p = p or self.p
     
         # Get total revenue, passing in the value of p.
         total_revenue = self.get_total_revenue(p=p)
@@ -100,8 +221,7 @@ class Monopolist():
 
     def get_marginal_cost(self, q=None):
         # If no p or q parameters are passed, used the initiated values.
-        if q == None:
-            q = self.q
+        q = q or self.q
     
         # Get total revenue, passing in the value of p.
         total_cost = self.get_total_cost(q=q)
@@ -116,11 +236,8 @@ class Monopolist():
     def get_profit(self, p=None, q=None):
         
         # If no p or q parameters are passed, used the initiated values.
-        if p == None:
-            p = self.p
-        
-        if q == None:
-            q = self.q
+        p = p or self.p
+        q = q or self.q
 
         # Define firm's profit function. The cost parameters are not required
         # here, so the current values are used. Also, values of p and q are not
