@@ -1,4 +1,25 @@
+# econ_models.firm
+# A class representing a firm.
+#
+# Author:   Greg Barbieri
+#
+# For license information, see LICENSE.txt
+
+"""
+A class representing a firm.
+"""
+
+##########################################################################
+## Imports
+##########################################################################
+
 import sympy as sp
+from .primitives.production import Production
+from .primitives.constraints import Cost_Structure
+
+##########################################################################
+## Representation of a Firm
+##########################################################################
 
 class Firm():
     """ A class representing a firm.

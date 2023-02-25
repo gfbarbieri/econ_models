@@ -1,5 +1,5 @@
 # econpy.primitives.production
-# Primitive classes for market actors (firms, consumers).
+# Production function for economic agents.
 #
 # Author:   Greg Barbieri
 #
@@ -15,20 +15,6 @@ Production function for economic agents.
 
 import sympy as sp
 from .generalized_function import generalized_function
-
-##########################################################################
-## Supported production functions.
-##########################################################################
-
-PRODUCTION_FUNCTIONAL_FORMS = {
-    "cobb-douglas": cobb_douglas(),
-    "perf_subs": linear_combination()
-}
-
-PRODUCTION_FUNCTION_NAMES = {
-    "cobb-douglas": "Cobb-Douglas Production",
-    "perf_subs": "Perfect Substitute Production"
-}
 
 ##########################################################################
 ## Production Function

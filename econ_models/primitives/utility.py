@@ -1,9 +1,13 @@
-# econpy.primitives.utility
+# econ_models.primitives.utility
 # Primitive classes for market actors (firms, consumers).
 #
 # Author:   Greg Barbieri
 #
 # For license information, see LICENSE.txt
+
+"""
+Primitive classes for market actors (firms, consumers, governance).
+"""
 
 ##########################################################################
 ## Imports

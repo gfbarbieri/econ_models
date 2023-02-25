@@ -1,6 +1,25 @@
+# econ_models.consumer
+# Primitive classes for market actors (firms, consumers).
+#
+# Author:   Greg Barbieri
+#
+# For license information, see LICENSE.txt
+
+"""
+Primitive classes for market actors (firms, consumers, governance).
+"""
+
+##########################################################################
+## Imports
+##########################################################################
+
 import sympy as sp
 from .primitives.utility import Utility
 from .primitives.constraints import Budget_Constraint
+
+##########################################################################
+## Consumer Class
+##########################################################################
 
 class Consumer():
     """ A consumer is a combination of a utility function and a budget constraint. Prices are exogenous,

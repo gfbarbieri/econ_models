@@ -1,12 +1,12 @@
-# econpy.primitives
-# Primitive classes for market actors (firms, consumers).
+# econ_models.primitives.constraints
+# A class representing constraints on economic actors.
 #
 # Author:   Greg Barbieri
 #
 # For license information, see LICENSE.txt
 
 """
-Primitive classes for market actors (firms, consumers, governance).
+A class representing constraints on economic actors.
 """
 
 ##########################################################################
@@ -75,7 +75,7 @@ class Budget_Constraint():
         )
 
 ##########################################################################
-## Cost Structures
+## Cost Structure
 ##########################################################################
 
 class Cost_Structure():
