@@ -10,97 +10,77 @@
 ##########################################################################
 
 import sympy as sp
-from .functional_forms import cobb_douglas
-from .functional_forms import linear_combination
+from .generalized_function import generalized_function
 
 ##########################################################################
-## Supported utiliy functions.
-##########################################################################
-
-UTILITY_FUNCTIONAL_FORMS = {
-    "cobb-douglas": cobb_douglas(),
-    "perf_subs": linear_combination()
-}
-
-UTILITY_FUNCTION_NAMES = {
-    "cobb-douglas": "Cobb-Douglas Utility",
-    "perf_subs": "Perfect Substitute Utility"
-}
-
-##########################################################################
-## Utility Functions
+## Utility Function
 ##########################################################################
 
 class Utility():
-    """ A class representing a utility function for two goods only. The utility function
-    takes the form of a Cobb-Douglas utility function: `U(x,y)=\prod a_i*x_i^b_i`.
+    """ A class representing a utility function.
 
     Attributes
     ----------
-    U   : float or sympy.core.symbol.Symbol
-        The total utility.
-    x_i : float or sympy.core.symbol.Symbol
-        The quantity of good_i.
-    a_i : float or sympy.core.symbol.Symbol, optional, default: 1
-        The linear term augmenting good_i.
-    b_i : float or sympy.core.symbol.Symbol, optional, default: 1
-        The polynomial term of good_i.
 
     Parameters
     ----------
-    num_goods : int, required, default: 2
-        The number of goods/characteristics in the utility function.
-    params : list, optional, default: [(1,1),(1,1)]
-        A list of tuples representing the liner and polynomial terms of each good, respectively.
-        That is, the first element in the params list is a tuple of the linear and polynomial term
-        of the first good. If None is passed, then all parameters are symbols.
+    num_inputs : int
+        The number of goods/characteristics that are inputs into the consumer's utility function and
+        budget constraint.
+    input_name : string
+        The character used as the input symbol.
+    coeff_values : tuple
+        The linear coefficient values.
+    coeff_name : string
+        The character symbol used to represent coefficients.
+    exponent_values : tuple
+        The exponent values.
+    exponent_name : string
+        The character symbol used to represent exponents.
+    dependent_value : tuple
+        The values of the dependent variable, if a constant is wanted.
+    dependent_name : string
+        The character symbol used to represent the dependent variable.
+    model : string
+        The model for combining inputs, either `product` for product or `sum` for summation.
 
     Examples
     --------
     """
 
-    def __init__(self, num_goods=2, params=[(1,1),(1,1)]):
+    def __init__(
+        self, num_inputs=2, input_name='x',
+        coeff_name='beta', coeff_values='symbol',
+        exponent_name='alpha', exponent_values='symbol',
+        dependent_name='U', dependent_value='symbol',
+        model='product'
+    ):
         """ Initialize the Utility class with parameters.
-
-        The utility parameters can be set as inputs, or they can be set to default
-        values of SymPy symbols.
     
         Parameters
         ----------
-        num_goods : int, required, default: 2
-            The number of goods/characteristics in the utility function.
-        params : list, optional, default: [(1,1),(1,1)]
-            A list of tuples representing the liner and polynomial terms of each good, respectively.
-            That is, the first element in the params list is a tuple of the linear and polynomial term
-            of the first good. If None is passed, then all parameters are symbols.
         """
 
-        # Define total utility.
-        self.U = sp.symbols('U', real=True)
+        # Define the utility function.
+        self.function, self.symbol_dict = generalized_function(
+            num_inputs=num_inputs, input_name=input_name,
+            coeff_name=coeff_name, coeff_values=coeff_values,
+            exponent_name=exponent_name, exponent_values=exponent_values,
+            dependent_name=dependent_name, dependent_value=dependent_value,
+            model=model
+        )
 
-        # Define the goods in the utility.
-        self.x = sp.symbols(f"x:{num_goods}", real=True, positive=True)
+    def set_params(self, **kwargs):
+        """ This function sets parameters of the utility funciton.
 
-        # Define the utility function's parameters.
-        if params == None:
-            self.a = sp.symbols(f"a:{num_goods}", real=True, positive=True)
-            self.b = sp.symbols(f"b:{num_goods}", real=True, positive=True)
-        else:
-            self.a = list(zip(*params))[0]
-            self.b = list(zip(*params))[1]
-
-        # Define the utility function as a homogenous equation, limited to two goods.
-        self.utility = (self.a[0] * self.x[0]**self.b[0]) * (self.a[1] * self.x[1]**self.b[1]) - self.U
-
-    def set_util_params(self, params=[(1,1),(1,1)]):
-        """ Set the parameters of the utility functon.
+        The user is expected to pass values for any free symbols, including values for
+        goods, exponents, coefficients, or the dependent variable. The function should
+        not return any values, but instead update the class's utility funtion. The idea
+        is that this would be used to update parameters after the utility funciton has
+        been created initially.
 
         Parameters
         ----------
-        params : list, optional, default: [(1,1),(1,1)]
-            A list of tuples representing the liner and polynomial terms of each good, respectively.
-            That is, the first element in the params list is a tuple of the linear and polynomial term
-            of the first good. If None is passed, then all parameters are symbols.
 
         Returns
         -------
@@ -109,77 +89,52 @@ class Utility():
         Examples
         --------
         """
+        pass
+
+    def total_utility(self):
+        """ This function calculates the total utility given a quantities of the goods (inputs
+        variable).
+
+        The expectation is that this function will take as arguments values for the goods
+        included in the utilty funciton. The function will substitute the variable for the
+        passed values for the goods, solve for utility (dependent variable), and return the
+        resulting utility as total utility.
+        
+        The user should be able to pass values for any specific indexed goods in the utility
+        function, no values, or values for all indexed goods. The indexed goods for which no
+        value was passed, the value should remain it's current value which may be a symbol.
     
-        # Define the utility function's parameters.
-        self.a = list(zip(*params))[0]
-        self.b = list(zip(*params))[1]
-
-    def get_total_util(self, x=[]):
-        """ This function calculates the total utility given a quantities of
-        goods x_i.
-
         Parameters
         ----------
-        x : list, required, default: []
-            The quantity values of each good x_i. To only set the quantity of
-            a specific number of goods, include the values in the list and
-            include None as the values for the remainder of the goods in the
-            list. None values will be replaced with current values.
-        
+
         Returns
         -------
-        float or Sympy function.
+        float or Sympy function
             The total utility.
 
         Examples
         --------
         """
+        pass
 
-        # If no values for the goods are passed, then the utility will be calculated
-        # with current values. If some goods are passed values, but others are not, then
-        # the passed values will replace current values of the goods and the remaining goods
-        # will keep their current values.
-        if len(x) == 0:
-            x = self.x
-        else:
-            x = [self.x[i] if g is None else g for i, g in enumerate(x)]
+    def get_indiff(self):
+        """ This function calculates the indifferene curve for two indexed goods, holding
+        utility and the quantity of any remaining index goods constant.
 
-        # Create list of substitutions and subtitute variables in the utility function
-        # with the list of substitutions.
-        subs = [(g, x[i]) for i, g in enumerate(self.x)]
-        utility = self.utility.subs(subs)
-
-        # Solve for utility in terms of the goods x_i.
-        utility = sp.solve(utility, self.U, simplify=True)
-
-        return utility[0]
-
-    def get_indiff(self, lhs=0, util=10):
-        """ This function calculates the indifferene curve using a constant utility value.
-        The indifference curve represents the combinations of both goods that result in the
-        specified value of utility.
+        The user is expected to tell the function which two indexed goods the indifference
+        curve should compare, the remaining will be assumed constant, including the utility.
+        The user may also pass a specific value of utility as the constant, as well as pass
+        specific values of the remaining indexed goods.
 
         Parameters
         ----------
-        lhs : string, required
-            Which good to isolate. The result will be an indifference function in terms
-            the remaining goods. E.g., lhs = x_1 -> x_1(x_i) where i != 1.
-        util : float, required
-            The total level of utility, held constant to create an indifference curve.
-    
+
         Returns
         -------
-        Sympy symbol
-            The utility function with a constant substituted for total utility.
+        Sympy function
+            The indifference curve for two indexed goods.
 
         Examples
         --------
         """
-
-        # Substitute the constant value for utility.
-        utility = self.utility.subs(self.U, util)
-
-        # Solve for the LHS variable.
-        indiff = sp.solve(utility, self.x[lhs], simplify=True)
-
-        return indiff[0]
+        pass

@@ -101,3 +101,25 @@ def plot_peqd(self):
     --------
     """
     pass
+
+##########################################
+## FIRM'S, COST STRUCTURE
+##########################################
+
+def plot_total_cost(self):
+    pass
+
+def plot_marginal_cost(self):
+    pass
+
+def plot_total_revenue(self):
+    pass
+
+def plot_marginal_revenue(self):
+    pass
+
+def plot_demand(self):
+    pass
+
+def plot_profit(self):
+    pass

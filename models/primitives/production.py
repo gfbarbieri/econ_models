@@ -14,8 +14,7 @@ Production function for economic agents.
 ##########################################################################
 
 import sympy as sp
-from .functional_forms import cobb_douglas
-from .functional_forms import linear_combination
+from .generalized_function import generalized_function
 
 ##########################################################################
 ## Supported production functions.
