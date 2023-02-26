@@ -22,7 +22,8 @@ from .primitives.constraints import Budget_Constraint
 ##########################################################################
 
 class Consumer():
-    """ A consumer is a combination of a utility function and a budget constraint. Prices are exogenous,
+    """
+    A consumer is a combination of a utility function and a budget constraint. Prices are exogenous,
     that is, the consumer is a price taker. In addition, the parameters of the utility function are
     exogenous and are created when the consumer is initiated.
 
@@ -48,22 +49,85 @@ class Consumer():
     def __init__(self, num_goods=2):
         """
         Define the consumers utility function and budget constraint.
-        """     
+        """
+
+        # Define number of goods.
+        self.num_goods = num_goods
 
         # Define the consumer's utility function.
-        self.utility = Utility(num_inputs=num_goods)
+        self.utility = Utility(num_inputs=self.num_goods)
 
         # Define the consumer's budget constraint.
-        self.budget_constraint = Budget_Constraint(num_inputs=num_goods)
+        self.budget_constraint = Budget_Constraint(num_inputs=self.num_goods)
+
+        # Define an empty optimal value dictionary.
+        self.opt_values_dict = {}
+
+    def marginal_utility(self, index=1):
+        util = sp.solve(self.utility.function, self.utility.symbol_dict['dependent'])[0]
+
+        mu = sp.diff(util, self.utility.symbol_dict['input'][index])
+
+        return mu
 
     def max_utility(self):
-        """ We have to maximize utility given a budget constraint.
         """
-        pass
-
-    def get_demand(self):
-        """ We have to calculate demand for each good.
+        Max {X_i} Objective Function given Constraint where Objective
+        Function is the utility function and Constraint is the budget.
         
-        This should return demand functions given values of inputs.
+        The Lagrangian method is used.
+                
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        Examples
+        --------
         """
-        pass
+
+        # Solve for utility in terms of the goods.
+        util = sp.solve(self.utility.function, self.utility.symbol_dict['dependent'])[0]
+
+        # Create a symbol for the Lagrangian lambda.
+        l = sp.symbols('lambda')
+
+        # Define the Lagrangian: `U(x_i) + \lambda(M - B(x_i))`.
+        L = util + l * self.budget_constraint.function
+
+        # Find the first order conditions for each good x_i and lambda.
+        Lx = [sp.diff(L, self.utility.symbol_dict['input'][i]) for i in range(self.num_goods)]
+        Ll = [sp.diff(L, l)]
+        Li = Lx + Ll
+
+        # Define the independent variables as a list.
+        i = [self.utility.symbol_dict['input'][i] for i in range(self.num_goods)] + [l]
+    
+        # Solve for the optimal values of goods and lambda.
+        self.opt_values_dict = sp.solve(Li, i, dict=True)[0]
+
+    def get_demand(self, index):
+        """
+        Query the demand for a quantity from the consumer's dictionary of optimal values.
+ 
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        Examples
+        --------
+        """
+        if not self.opt_values_dict:
+            raise AttributeError("Run max_utility() first.")
+        
+        # Get the symbol for the indexed input.
+        var = self.utility.symbol_dict['input']
+
+        # Set demand equal to the optimal value of the indexed input as a homogenous
+        # equation.
+        demand = self.opt_values_dict[var[index]] - self.utility.symbol_dict['input'][index]
+        
+        return demand
