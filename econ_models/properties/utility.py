@@ -14,7 +14,7 @@ Primitive classes for market actors (firms, consumers, governance).
 ##########################################################################
 
 import sympy as sp
-from .generalized_function import generalized_function
+from .functional_forms import generalized_function
 
 ##########################################################################
 ## Utility Function

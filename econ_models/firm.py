@@ -14,8 +14,8 @@ A class representing a firm.
 ##########################################################################
 
 import sympy as sp
-from .primitives.production import Production
-from .primitives.constraints import Cost_Structure
+from .properties.production import Production
+from .properties.constraints import Cost_Structure
 
 ##########################################################################
 ## Representation of a Firm

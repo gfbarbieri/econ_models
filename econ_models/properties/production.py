@@ -14,7 +14,7 @@ Production function for economic agents.
 ##########################################################################
 
 import sympy as sp
-from .generalized_function import generalized_function
+from .functional_forms import generalized_function
 
 ##########################################################################
 ## Production Function

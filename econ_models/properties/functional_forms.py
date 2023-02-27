@@ -1,3 +1,14 @@
+# econ_models.primitives.functional_forms
+# Common funcitonal forms for utility, production, and constraints in economoics.
+#
+# Author:   Greg Barbieri
+#
+# For license information, see LICENSE.txt
+
+"""
+Funcitons that represent common funcitonal forms for utility, production, and constraints in economoics.
+"""
+
 ##########################################################################
 ## Imports
 ##########################################################################
@@ -8,12 +19,49 @@ import sympy as sp
 ## Generalized Function
 ##########################################################################
 
-def generalized_function(
+def generalized(
     num_inputs=2, input_name='k',
     coeff_name='beta', coeff_values='symbol',
     exponent_name='alpha', exponent_values='symbol',
     dependent_name='Y', dependent_value='symbol', model='product'
 ):
+    """ This function represents a generalized functional form of common
+    functions used in economics.
+
+    The function supports the following functional forms:
+        1. Cobb-Douglas with IRS, DRS, or CRS.
+        2. Linear, such as a budget constraint or perfect substitutes.
+        3. Quasi-linear without logarithms or other functions.
+
+    Parameters
+    ----------
+    num_inputs : int
+        The number of goods/characteristics that are inputs into the consumer's utility function and
+        budget constraint.
+    input_name : string
+        The character used as the input symbol.
+    coeff_values : tuple
+        The linear coefficient values.
+    coeff_name : string
+        The character symbol used to represent coefficients.
+    exponent_values : tuple
+        The exponent values.
+    exponent_name : string
+        The character symbol used to represent exponents.
+    dependent_value : tuple
+        The values of the dependent variable, if a constant is wanted.
+    dependent_name : string
+        The character symbol used to represent the dependent variable.
+    model : string
+        The model for combining inputs, either `product` for product or `sum` for summation.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    """
 
     # Create a dictionary of the symbols and indexes.
     symboldex = {
@@ -53,3 +101,15 @@ def generalized_function(
         func = func.subs(symboldex['dependent'], dependent_value)
 
     return func, symboldex
+
+def cobb_douglas():
+    pass
+
+def perfect_substitutes():
+    pass
+
+def ces():
+    pass
+
+def perfect_complements():
+    pass

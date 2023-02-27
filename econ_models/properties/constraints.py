@@ -14,7 +14,7 @@ A class representing constraints on economic actors.
 ##########################################################################
 
 import sympy as sp
-from .generalized_function import generalized_function
+from .functional_forms import generalized_function
 
 ##########################################################################
 ## Budget Constraint

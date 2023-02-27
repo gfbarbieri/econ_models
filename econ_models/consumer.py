@@ -14,8 +14,8 @@ Primitive classes for market actors (firms, consumers, governance).
 ##########################################################################
 
 import sympy as sp
-from .primitives.utility import Utility
-from .primitives.constraints import Budget_Constraint
+from .properties.utility import Utility
+from .properties.constraints import Budget_Constraint
 
 ##########################################################################
 ## Consumer Class
