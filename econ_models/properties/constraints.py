@@ -14,7 +14,7 @@ A class representing constraints on economic actors.
 ##########################################################################
 
 import sympy as sp
-from .functional_forms import generalized_function
+from .functional_forms import generalized
 
 ##########################################################################
 ## Budget Constraint
@@ -66,7 +66,7 @@ class Budget_Constraint():
         """
 
         # Define the utility function.
-        self.function, self.symbol_dict = generalized_function(
+        self.function, self.symbol_dict = generalized(
             num_inputs=num_inputs, input_name=input_name,
             coeff_name=coeff_name, coeff_values=coeff_values,
             exponent_name=exponent_name, exponent_values=exponent_values,
