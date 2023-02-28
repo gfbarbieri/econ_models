@@ -97,7 +97,7 @@ Maximize utility given the budget constraint.
 consumer.max_utility()
 ```
 
-Print the solutions, the demand of inputs $x_0$.
+Print the resulting demand for input $x_0$.
 
 
 ```python
