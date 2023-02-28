@@ -28,7 +28,7 @@ utility.function
 
 
 
-$\displaystyle - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
+$$- U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$$
 
 
 
@@ -72,7 +72,7 @@ consumer.utility.function
 
 
 
-$- U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
+$$- U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$$
 
 
 
@@ -86,7 +86,7 @@ consumer.budget_constraint.function
 
 
 
-$- M + {p}_{0} {x}_{0} + {p}_{1} {x}_{1}$
+$$- M + {p}_{0} {x}_{0} + {p}_{1} {x}_{1}$$
 
 
 
@@ -107,6 +107,6 @@ consumer.get_demand(index=0)
 
 
 
-$\frac{M {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p}_{0}} - {x}_{0}$
+$$\frac{M {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p}_{0}} - {x}_{0}$$
 
 
