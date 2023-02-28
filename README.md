@@ -1,145 +1,112 @@
 # Overview
 
-Econ Models are classes that allow you to explore specific economic models.
+Econmodels is an open source library for exploring the core concepts of economics. The framework integrates a market structure with market actors and their decision functions. The module is built on top of Sympy, allowing symbolic logic for generalized examples as well as numeric examples.
 
-## Included Models:
-1. Monopoly model.
+## Example Using Properties
 
-## Example Usage
-
-Import the class.
+Import the property `Utility`.
 
 
 ```python
-from models.monopolist import Monopolist
+from econ_models.properties.utility import Utility
 ```
 
-Instantiate the class.
+Instantiate the `Utility` class.
 
 
 ```python
-firm = Monopolist()
+utility = Utility()
 ```
 
-Print the total revenue and total cost functions.
+Print the utility function.
 
 
 ```python
-print(firm.get_total_revenue())
-print(firm.get_total_cost())
+utility.function
 ```
 
-    p*q
-    c*q
 
 
-Print generalized profit function.
+
+$\displaystyle - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
+
+
+
+Print the symbols available.
 
 
 ```python
-print(firm.get_profit())
+utility.symbol_dict
 ```
 
-    -c*q + p*q
 
 
-Print the demand function with quantity as a function of price Q(P), and price as a function of quantity P(Q).
+
+    {'dependent': U, 'input': x, 'coeff': beta, 'exponent': alpha, 'i': i}
+
+
+
+## Example using Economic Agents
+
+Import the economic acter `Consumer`.
 
 
 ```python
-print(firm.get_demand(inverse=False))
-print(firm.get_demand(inverse=True))
+from econ_models.consumer import Consumer
 ```
 
-    (a - p)/b
-    a - b*q
-
-
-Print the total revenue function where P is substituted with the inverse demand function.
+Instantiate the `Consumer` class.
 
 
 ```python
-print(firm.get_total_revenue(p=firm.get_demand(inverse=True)))
+consumer = Consumer()
 ```
 
-    q*(a - b*q)
-
-
-Print marginal revenue and marginal cost functions where P is substituted with the inverse demand function.
+Print the consumers property `utility`. The default utility function is a Cobb-Douglas utility with two goods.
 
 
 ```python
-print(firm.get_marginal_revenue(p=firm.get_demand(inverse=True)))
-print(firm.get_marginal_cost())
+consumer.utility.function
 ```
 
-    a - 2*b*q
-    c
 
 
-Print the generalized profit function where P is substituted with the inverse demand function.
+
+$\displaystyle - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
+
+
+
+Print the consumers property `budget_constraint`.
 
 
 ```python
-print(firm.get_profit(p=firm.get_demand(inverse=True)))
+consumer.budget_constraint.function
 ```
 
-    -c*q + q*(a - b*q)
 
 
-Find the firm's price elasticity of demand at any price and quantity.
+
+$\displaystyle - M + {p}_{0} {x}_{0} + {p}_{1} {x}_{1}$
+
+
+
+Maximize utility given the budget constraint.
 
 
 ```python
-print(firm.price_elasticity())
+consumer.max_utility()
 ```
 
-    -p_0/(b*q_0)
-
-
-Find the profit maximizing price, quantity, and maximum profit.
+Print the solutions, the demand of inputs $x_0$.
 
 
 ```python
-print(firm.profit_maximization())
+consumer.get_demand(index=0)
 ```
 
-    (a/2 + c/2, (a - c)/(2*b), -c*(a - c)/(2*b) + (a/2 + c/2)*(a - c)/(2*b))
 
 
-Find the firm's price elasticity of demand at the profit maximizing price and quantity.
 
+$\displaystyle \frac{M {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p}_{0}} - {x}_{0}$
 
-```python
-p, q, profit = firm.profit_maximization()
-
-print(firm.price_elasticity(p_0=p, q_0=q).simplify())
-```
-
-    (-a - c)/(a - c)
-
-
-Market demand functions take the form of $P = a - b*Q$. Cost functions take the form of $TC = c*Q$. Set parameters for market demand and cost functions of a = 100, b = 1, and c = 25.
-
-
-```python
-firm = Monopolist(a=100, b=1, c=25)
-```
-
-Find profit maximizing price, quantity, maximum profit, and elasticity at the profit maximizing price and quantity.
-
-
-```python
-p, q, profit = firm.profit_maximization()
-
-print(f"The profit maximizing price per unit is {p.evalf()}.")
-print(f"The profit maximizing quantity produced is {q.evalf()}.")
-print(f"The firm's total profit is {profit.evalf()}.")
-print(f"The price elasticity of demand at the profit maximizing price and quantity is {firm.price_elasticity(p_0=p, q_0=q)}.")
-```
-
-    The profit maximizing price per unit is 62.5000000000000.
-    The profit maximizing quantity produced is 37.5000000000000.
-    The firm's total profit is 1406.25000000000.
-    The price elasticity of demand at the profit maximizing price and quantity is -5/3.
 
