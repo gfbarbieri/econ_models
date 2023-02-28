@@ -1,4 +1,15 @@
 User Guide
 ==========
 
-See `<https://scikit-learn.org/stable/user_guide.html>` for template and encouragement.
+The user guide provides explanations of each property, agent, and model available.
+
+.. toctree::
+   :maxdepth: 1
+   :numbered:
+   :caption: User Guide:
+
+    Properties
+    Constraints
+    Markets
+    Production
+    Utility

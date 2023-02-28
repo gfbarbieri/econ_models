@@ -1,8 +1,8 @@
 # Overview
 
-Econmodels is an open source library for exploring the core concepts of economics. The framework integrates a market structure with market actors and their decision functions. The module is built on top of Sympy, allowing symbolic logic for generalized examples as well as numeric examples.
+EconModels is an open source library for exploring the core concepts of economics. The framework integrates a market structure with market actors and their decision functions. The module is built on top of Sympy, allowing symbolic logic for generalized examples as well as numeric examples.
 
-## Example Using Properties
+## Example Using Agent Properties
 
 Import the property `Utility`.
 
@@ -46,7 +46,7 @@ utility.symbol_dict
 
 
 
-## Example using Economic Agents
+## Example Using Economic Agents
 
 Import the economic acter `Consumer`.
 
