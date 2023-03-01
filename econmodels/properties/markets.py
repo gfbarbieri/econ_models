@@ -1,4 +1,4 @@
-# econpy.primitives
+# econmodels.primitives
 # Class for creating market demand and supply functions.
 #
 # Author:   Greg Barbieri

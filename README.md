@@ -8,7 +8,7 @@ Import the property `Utility`.
 
 
 ```python
-from econ_models.properties.utility import Utility
+from econmodels.properties.utility import Utility
 ```
 
 Instantiate the `Utility` class.
@@ -52,7 +52,7 @@ Import the economic acter `Consumer`.
 
 
 ```python
-from econ_models.consumer import Consumer
+from econmodels.consumer import Consumer
 ```
 
 Instantiate the `Consumer` class.

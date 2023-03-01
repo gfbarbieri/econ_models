@@ -1,4 +1,4 @@
-# econ_models.primitives.functional_forms
+# econmodels.primitives.functional_forms
 # Common funcitonal forms for utility, production, and constraints in economoics.
 #
 # Author:   Greg Barbieri

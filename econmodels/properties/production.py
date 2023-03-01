@@ -1,4 +1,4 @@
-# econpy.primitives.production
+# econmodels.primitives.production
 # Production function for economic agents.
 #
 # Author:   Greg Barbieri

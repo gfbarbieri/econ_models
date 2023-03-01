@@ -1,4 +1,4 @@
-# econ_models.primitives.utility
+# econmodels.primitives.utility
 # Primitive classes for market actors (firms, consumers).
 #
 # Author:   Greg Barbieri

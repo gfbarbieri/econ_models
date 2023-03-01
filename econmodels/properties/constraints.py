@@ -1,4 +1,4 @@
-# econ_models.primitives.constraints
+# econmodels.primitives.constraints
 # A class representing constraints on economic actors.
 #
 # Author:   Greg Barbieri
