@@ -8,15 +8,12 @@
 ## Imports
 ##########################################################################
 
-# -- Path setup --------------------------------------------------------------
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 
 ##########################################################################
 ## General configuration
@@ -41,13 +38,10 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
     "sphinx.ext.imgconverter",
-    "sphinx.ext.intersphinx",
-    # "sphinx.ext.linkcode",    
+    "sphinx.ext.intersphinx", 
     "sphinx.ext.mathjax",
     "sphinx.ext.todo",
-    "sphinx.ext.viewcode",
-    # "sphinx_gallery.gen_gallery",
-    # "sphinxext.opengraph"
+    "sphinx.ext.viewcode"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
