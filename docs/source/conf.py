@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('..'))
 ##########################################################################
 
 # General information about the project.
-project = 'EconModels'
+project = 'econmodels'
 copyright = '2023, EconModels developers'
 author = 'The EconModels developers'
 
@@ -32,7 +32,8 @@ release = '0.1.0'
 # ones.
 extensions = [
     "matplotlib.sphinxext.plot_directive",
-    "numpydoc",
+    # "numpydoc",
+    #'nbsphinx'  # Support jupyter notebooks
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
@@ -40,6 +41,8 @@ extensions = [
     "sphinx.ext.imgconverter",
     "sphinx.ext.intersphinx", 
     "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    #'sphinx_rtd_theme',  # Read the docs theme
     "sphinx.ext.todo",
     "sphinx.ext.viewcode"
 ]
