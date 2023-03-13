@@ -17,13 +17,13 @@ _utils_ = ['cobb-douglas','substitutes','complements','ces','polynomial','quasi-
 ##########################################################################
 
 import sympy as sp
-from .functional_forms import FunctionalForms
+from .base import BaseForms
 
 ##########################################################################
 ## Utility Function
 ##########################################################################
 
-class Utility(FunctionalForms):
+class Utility(BaseForms):
     """ A class representing a utility function.
 
     Parameters

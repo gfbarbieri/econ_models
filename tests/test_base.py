@@ -1,6 +1,6 @@
 import sympy as sp
 import pytest
-from econmodels.agent_functions.functional_forms import FunctionalForms
+from econmodels.functional_forms.base import BaseForms
 
 def test_sub_values():
     # Test Case 1: Substituting with None values.
@@ -25,7 +25,7 @@ def test_sub_values():
     expected = sp.Add(*tuple([1]*num_inputs))
 
     # Instantiate class to access sub_values function.
-    func_form = FunctionalForms()
+    func_form = BaseForms()
 
     # Asset that the function returns expected results.
     assert func_form.sub_values(num_inputs, f, sub_values) == expected
@@ -54,7 +54,7 @@ def test_sub_values():
     )
 
     # Instantiate class to access sub_values function.
-    func_form = FunctionalForms()
+    func_form = BaseForms()
 
     # Asset that the function returns expected results.
     assert func_form.sub_values(num_inputs, f, sub_values) == expected
@@ -75,7 +75,7 @@ def test_sub_values():
     expected = sp.Add(sp.Mul(1*num_inputs), sp.Add(*sub_y))
 
     # Instantiate class to access sub_values function.
-    func_form = FunctionalForms()
+    func_form = BaseForms()
 
     # Asset that the function returns expected results.
     assert func_form.sub_values(num_inputs, f, sub_values) == expected
@@ -94,7 +94,7 @@ def test_sub_values():
     expected = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
     
     # Instantiate class to access sub_values function.
-    func_form = FunctionalForms()
+    func_form = BaseForms()
 
     # Asset that the function returns expected results.
     assert func_form.sub_values(num_inputs, f, sub_values) == expected
@@ -114,7 +114,7 @@ def test_sub_values():
     expected = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
     
     # Instantiate class to access sub_values function.
-    func_form = FunctionalForms()
+    func_form = BaseForms()
 
     # Asset that the function returns expected results.
     assert func_form.sub_values(num_inputs, f, sub_values) == expected
@@ -126,7 +126,7 @@ def test_polynomial_combination():
     # passed valid input values.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -161,7 +161,7 @@ def test_polynomial_combination():
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical function and a dictionary of symbols and
     # indexes when passed a different number of inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=3,
         input_name='x',
         coeff_name='a',
@@ -186,7 +186,7 @@ def test_polynomial_combination():
     # Test case for zero inputs: Check whether the function returns a valid
     # mathematical function and a dictionary of symbols and indexes when passed
     # zero inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=0,
         input_name='x',
         coeff_name='a',
@@ -212,7 +212,7 @@ def test_polynomial_combination():
     # AttributeError when a tuple is passed to substitute a Sympy symbol.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -234,7 +234,7 @@ def test_polynomial_combination():
     # instance.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -257,7 +257,7 @@ def test_cobb_douglas():
     # passed valid input values.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -292,7 +292,7 @@ def test_cobb_douglas():
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical equation and a dictionary of symbols and
     # indexes when passed a different number of inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=3,
         input_name='x',
         coeff_name='a',
@@ -316,7 +316,7 @@ def test_cobb_douglas():
     # Test case for zero inputs: Check whether the function returns a valid
     # mathematical function and a dictionary of symbols and indexes when passed
     # zero inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=0,
         input_name='x',
         coeff_name='a',
@@ -342,7 +342,7 @@ def test_cobb_douglas():
     # AttributeError when a tuple is passed to substitute a Sympy symbol.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -364,7 +364,7 @@ def test_cobb_douglas():
     # instance.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -387,7 +387,7 @@ def test_substitutes():
     # passed valid input values.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -422,7 +422,7 @@ def test_substitutes():
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical function and a dictionary of symbols and
     # indexes when passed a different number of inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=3,
         input_name='x',
         coeff_name='a',
@@ -447,7 +447,7 @@ def test_substitutes():
     # Test case for zero inputs: Check whether the function returns a valid
     # mathematical function and a dictionary of symbols and indexes when passed
     # zero inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=0,
         input_name='x',
         coeff_name='a',
@@ -473,7 +473,7 @@ def test_substitutes():
     # AttributeError when a tuple is passed to substitute a Sympy symbol.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -495,7 +495,7 @@ def test_substitutes():
     # instance.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -518,7 +518,7 @@ def test_complements():
     # passed valid input values.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -553,7 +553,7 @@ def test_complements():
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical equation and a dictionary of symbols and
     # indexes when passed a different number of inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=3,
         input_name='x',
         coeff_name='a',
@@ -578,7 +578,7 @@ def test_complements():
     # Test case for zero inputs: Check whether the function returns a valid
     # mathematical equation and a dictionary of symbols and indexes when passed
     # zero inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=0,
         input_name='x',
         coeff_name='a',
@@ -603,7 +603,7 @@ def test_complements():
     # AttributeError when a tuple is passed to substitute a Sympy symbol.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -625,7 +625,7 @@ def test_complements():
     # instance.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -648,7 +648,7 @@ def test_ces():
     # passed valid input values.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -682,7 +682,7 @@ def test_ces():
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical equation and a dictionary of symbols and
     # indexes when passed a different number of inputs.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=3,
         input_name='x',
         coeff_name='a',
@@ -705,7 +705,7 @@ def test_ces():
     # Test Case 3:
     # Test case for zero inputs: Check whether the function raises an error
     # for the CES function if exponent values are empty.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=0,
         input_name='x',
         coeff_name='a',
@@ -725,7 +725,7 @@ def test_ces():
     # AttributeError when a tuple is passed to substitute a Sympy symbol.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',
@@ -747,7 +747,7 @@ def test_ces():
     # instance.
 
     # Instantiate class with arguments.
-    function = FunctionalForms(
+    function = BaseForms(
         num_inputs=2,
         input_name='x',
         coeff_name='a',

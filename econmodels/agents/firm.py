@@ -14,9 +14,7 @@ Classes for economic actors, such as consumers and firms.
 ##########################################################################
 
 import sympy as sp
-from ..agent_functions.functions import Production
-from ..agent_functions.functions import Input_Constraint
-from ..agent_functions.functions import Cost_Structure
+from ..functional_forms.production import Production
 
 ##########################################################################
 ## Representation of a Firm

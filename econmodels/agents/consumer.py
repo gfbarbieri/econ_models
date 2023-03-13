@@ -14,14 +14,14 @@ Classes for economic actors, such as consumers and firms.
 ##########################################################################
 
 import sympy as sp
-from agent_functions.utility import Utility
-from agent_functions.constraint import Input_Constraint
+from functional_forms.utility import Utility
+from functional_forms.constraint import Input_Constraint
 
 ##########################################################################
 ## Representation of a Consumer
 ##########################################################################
 
-class Consumer():
+class Consumer(Utility, Input_Constraint):
     """
     A consumer is a combination of a utility function and a budget
     constraint. Prices are exogenous, that is, the consumer is a price

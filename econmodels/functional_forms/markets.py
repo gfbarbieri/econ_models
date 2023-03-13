@@ -1,12 +1,12 @@
-# econmodels.properties
-# A class representing the primary functions of economic agents.
+# econmodels.functional_forms.markets
+# A class constructing functional forms of market equations.
 #
 # Author:   Greg Barbieri
 #
 # For license information, see LICENSE.txt
 
 """
-A class representing the primary properties of economic agents.
+A class constructing functional forms of market equations.
 """
 
 ##########################################################################
@@ -14,13 +14,13 @@ A class representing the primary properties of economic agents.
 ##########################################################################
 
 import sympy as sp
-from .functional_forms import generalized
+from .base import BaseForms
 
 ##########################################################################
 ## Market Functions
 ##########################################################################
 
-class Market():
+class Market(BaseForms):
     """
     A market is function defines a relationship between the unit price and quantity
     of a good. An increasing relationship can be used to represent supply function
@@ -113,7 +113,8 @@ class Market():
 ##########################################################################
 
 class Cost_Structure():
-    """ A class representing the cost structure of a firm.
+    """
+    A class representing the cost structure of a firm.
 
     Attributes
     ----------

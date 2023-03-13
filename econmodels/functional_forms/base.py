@@ -6,8 +6,8 @@
 # For license information, see LICENSE.txt
 
 """
-Func that represent common funcitonal forms for utility, production, and
-constraint functions in economoics.
+Class that represent common functional forms for utility, production, and
+resource constraint functions in economoics.
 """
 
 ##########################################################################
@@ -20,7 +20,7 @@ import sympy as sp
 ## Functional Forms Class
 ##########################################################################
 
-class FunctionalForms():
+class BaseForms():
     """
     The FunctionalForm class returns common functional forms used in economics
     to represent utility and production functions. Each function form follows
@@ -47,6 +47,10 @@ class FunctionalForms():
         with a tuple of 1s. If a tuple, they are substituted with the
         corresponding values. Default is 'symbol'.
 
+    constant_name : str, optional
+
+    constant_value : {None, 'symbol', tuple}, optional
+
     exponent_name : str, optional
         The base name for the exponent variables. Default is 'alpha'.
 
@@ -70,7 +74,7 @@ class FunctionalForms():
     >>> from econmodels.agent_functions import FunctionalForms
 
     # Construct the functional form of a Cobb-Douglas function with two inputs.
-    >>> func_forms = FunctionalForms()
+    >>> func_forms = BaseForms()
     >>> cobb_douglas, symboldict = func_forms.cobb_douglas()
     >>> print(cobb_douglas)
     C - Y + beta[0]*beta[1]*x[0]**alpha[0]*x[1]**alpha[1]
@@ -79,7 +83,7 @@ class FunctionalForms():
     # for two inputs 'k_1' and 'k_2' with coefficients 0.5 and 0.7,
     # respectively, and a dependent variable 'Y' with a value of 100 and a
     # constant 'C' of 10.
-    >>> func_forms = FunctionalForms(
+    >>> func_forms = BaseForms(
     ... num_inputs=2, input_name='k',
     ... coeff_name='beta', coeff_values=(0.5, 0.7),
     ... dependent_name='Y', dependent_value=100,
@@ -89,7 +93,7 @@ class FunctionalForms():
     0.5*k[0] + 0.7*k[1] + 10 - Y
 
     # Construction the functional form of a CES function.
-    >>> func_forms = FunctionalForms()
+    >>> func_forms = BaseForms()
     >>> ces, symboldict = func_forms.ces()
     >>> print(ces)
     C - Y + (beta[0]*x[0]**alpha + beta[1]*x[1]**alpha)**(1/alpha)
