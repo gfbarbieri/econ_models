@@ -1,4 +1,4 @@
-def plot_utility(self):
+def plot_utility():
     """ This function plots the total utility holding one the quantity of
     one of the goods constant. The vertical axis is total utility and the
     horizontal axis is quantity of the variable good.
@@ -17,7 +17,7 @@ def plot_utility(self):
     """
     pass
 
-def plot_indifference(self):
+def plot_indifference():
     """ This function plots the indifference curve. The vertical axis is the
     quantity of a isolated good (dependent variable) and the horizontal axis is
     the quantity of good passed into the plot function. the level of utility is default
@@ -37,7 +37,7 @@ def plot_indifference(self):
     """
     pass
 
-def plot_production(self):
+def plot_production():
     """
 
     Parameters
@@ -51,7 +51,7 @@ def plot_production(self):
     """
     pass
 
-def plot_isoquant(self):
+def plot_isoquant():
     """
     Parameters
     ----------
@@ -64,7 +64,7 @@ def plot_isoquant(self):
     """
     pass
 
-def plot_demand(self):
+def plot_demand():
     """ This function plots the inverse demand function p(q). The vertical
     axis is price and the horizontal axis is quantity.
 
@@ -82,7 +82,7 @@ def plot_demand(self):
     """
     pass
 
-def plot_peqd(self):
+def plot_peqd():
     """ This function plots the price elasticity of quantity demanded. The
     horizontal axis is quantity demanded and the vertical axis is the price
     elasticity of quantity demanded. The quantities are input into the demand
@@ -106,20 +106,20 @@ def plot_peqd(self):
 ## FIRM'S, COST STRUCTURE
 ##########################################
 
-def plot_total_cost(self):
+def plot_total_cost():
     pass
 
-def plot_marginal_cost(self):
+def plot_marginal_cost():
     pass
 
-def plot_total_revenue(self):
+def plot_total_revenue():
     pass
 
-def plot_marginal_revenue(self):
+def plot_marginal_revenue():
     pass
 
-def plot_demand(self):
+def plot_demand():
     pass
 
-def plot_profit(self):
+def plot_profit():
     pass

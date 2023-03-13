@@ -101,8 +101,14 @@ class FunctionalForms():
         coeff_name='beta', coeff_values='symbol',
         exponent_name='alpha', exponent_values='symbol',
         dependent_name='Y', dependent_value='symbol',
-        constant_name='C'
+        constant_name='C', constant_value='symbol'
     ):
+        # Check that number of inputs passed is greater than 0.
+        if num_inputs < 0:
+            raise Exception(
+                f"{num_inputs} inputs passed. Number of inputs must be greater than zero."
+            )
+
         self.num_inputs = num_inputs
         self.input_name = input_name
         self.coeff_name = coeff_name
@@ -112,6 +118,7 @@ class FunctionalForms():
         self.dependent_name = dependent_name
         self.dependent_value = dependent_value
         self.constant_name = constant_name
+        self.constant_value = constant_value
 
     ##########################################################################
     ## Substitute Values
@@ -129,10 +136,13 @@ class FunctionalForms():
         func : SymPy expression
             The function to substitute values into.
 
-        symbol_values : dict
-            A dictionary of symbol-value pairs to substitute into the function.
+        symbol_values : list
+            A list of symbol-value pairs to substitute into the function.
             If the value is None, the symbol is substituted with a tuple of 1s.
-            If the value is a tuple, the symbol is substituted with that tuple.
+            If the value is a tuple, the indexed symbol is substituted with
+            values in that tuple.
+            If the value is a integer, the symbol is substituted with that
+            integer value.
 
         Returns
         -------
@@ -140,11 +150,13 @@ class FunctionalForms():
             The function with symbol values substituted in.
         """
 
-        for var, values in symbol_values:
-            if values == None:
-                func = func.subs(var, tuple([1]*num_inputs))
-            elif values != None and isinstance(values, tuple) == True:
-                func = func.subs(var, values)
+        for sym, values in symbol_values:
+            if values == None and type(sym) == sp.tensor.indexed.IndexedBase:
+                func = func.subs(sym, tuple([1]*num_inputs))
+            elif values == None and type(sym) == sp.core.symbol.Symbol:
+                func = func.subs(sym, 1)
+            elif values != None and (isinstance(values, tuple) or isinstance(values, int)) == True:
+                func = func.subs(sym, values)
 
         return func
 
@@ -154,7 +166,7 @@ class FunctionalForms():
 
     def polynomial_combination(self):
         """
-        Construct a polynomial equation from inputs, coefficients, and exponents.
+        Construct a polynomial function.
 
         Returns
         -------
@@ -202,7 +214,8 @@ class FunctionalForms():
             symbol_values=[
                 [symboldict['coefficient'], self.coeff_values],
                 [symboldict['exponent'], self.exponent_values],
-                [symboldict['dependent'], self.dependent_value]
+                [symboldict['dependent'], self.dependent_value],
+                # [symboldict['constant'], self.constant_value]
             ]
         )
 
@@ -211,9 +224,7 @@ class FunctionalForms():
 
     def cobb_douglas(self):
         """
-        Calculates the functional form of a Cobb-Douglas production function, given the number
-        of inputs, the input names, the coefficient and exponent names, the dependent variable
-        name, and a constant. The Cobb-Douglas function is defined as cX^a*dY^b.
+        Construct a Cobb-Douglas function: cX^a*dY^b.
 
         Returns
         -------
@@ -269,9 +280,7 @@ class FunctionalForms():
 
     def substitutes(self):
         """
-        Calculates the functional form of a function with perfect substitutes,
-        given the number of inputs, the input names, the coefficient name and
-        values, the dependent variable name and value, and a constant.
+        Construct a function with perfect substitutes inputs.
 
         A function with perfect substitutes is a linear combination of inputs,
         such that each input can be completely substituted for the other without
@@ -304,7 +313,7 @@ class FunctionalForms():
 
     def complements(self):
         """
-        Create a functional form for perfect complements production functions.
+        Construct a function for perfect complement inputs.
 
         Returns
         -------
@@ -351,8 +360,7 @@ class FunctionalForms():
 
     def ces(self):
         """
-        Calculates the Constant Elasticity of Substitution (CES) function given a number of inputs, coefficients,
-        exponents, and dependent variable.
+        Construct a Constant Elasticity of Substitution (CES) function.
 
         Returns
         -------
@@ -407,10 +415,10 @@ class FunctionalForms():
 
     def quasi_linear():
         """
-        A quasi-linear utility function has a linear and non-linear component.
-        The linear component is the numeraire. All of the other terms will be
-        be combined by an arbitrary function:
+        Construct A quasi-linear utility function has a linear and non-linear
+        component. The linear component is the numeraire. All of the other
+        terms will be be combined by an arbitrary function:
 
         \left(x_{1},\dots ,x_{L}\right)=x_{1}+\theta \left(x_{2},...,x_{L}\right)
         """
-        print("Quasi-Linear Functions are underevelopment.")
+        print("Quasi-linear functions are being developed.")
