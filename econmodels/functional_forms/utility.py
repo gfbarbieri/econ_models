@@ -69,7 +69,7 @@ class Utility(BaseForms):
         coeff_name='beta', coeff_values='symbol',
         exponent_name='alpha', exponent_values='symbol',
         dependent_name='U', dependent_value='symbol',
-        constant_name='C',
+        constant_name='C', constant_value='symbol',
         func_form='cobb-douglas'
     ):
         # Check that functional form is supported.
@@ -82,7 +82,7 @@ class Utility(BaseForms):
             coeff_name = coeff_name, coeff_values = coeff_values,
             exponent_name = exponent_name, exponent_values = exponent_values,
             dependent_name = dependent_name, dependent_value = dependent_value,
-            constant_name = constant_name
+            constant_name = constant_name, constant_value=constant_value
         )
 
         # Set utility function using a dictionary dispatcher.

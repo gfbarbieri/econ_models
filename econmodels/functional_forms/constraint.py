@@ -61,8 +61,8 @@ class Input_Constraint(BaseForms):
     def __init__(
         self,
         num_inputs=2, input_name='x',
-        coeff_name='beta', coeff_values='symbol',
-        exponent_name='alpha', exponent_values='symbol',
+        coeff_name='gamma', coeff_values='symbol',
+        exponent_name='rho', exponent_values='symbol',
         dependent_name='M', dependent_value='symbol',
         constant_name='C', constant_value='symbol'
     ):

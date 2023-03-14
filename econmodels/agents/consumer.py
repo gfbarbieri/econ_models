@@ -1,4 +1,4 @@
-# econmodels.agent_types
+# econmodels.agents.consumer
 # Classes for economic agents.
 #
 # Author:   Greg Barbieri
@@ -6,7 +6,8 @@
 # For license information, see LICENSE.txt
 
 """
-Classes for economic actors, such as consumers and firms.
+A class representing a standard consumer with a utility funciton and budget
+constraint.
 """
 
 ##########################################################################
@@ -14,14 +15,14 @@ Classes for economic actors, such as consumers and firms.
 ##########################################################################
 
 import sympy as sp
-from functional_forms.utility import Utility
-from functional_forms.constraint import Input_Constraint
+from ..functional_forms.utility import Utility
+from ..functional_forms.constraint import Input_Constraint
 
 ##########################################################################
 ## Representation of a Consumer
 ##########################################################################
 
-class Consumer(Utility, Input_Constraint):
+class Consumer():
     """
     A consumer is a combination of a utility function and a budget
     constraint. Prices are exogenous, that is, the consumer is a price
@@ -60,10 +61,10 @@ class Consumer(Utility, Input_Constraint):
         self.num_goods = num_goods
 
         # Define the consumer's utility function.
-        self.utility = Utility(num_inputs=self.num_goods)
+        self.utility = Utility(num_inputs=num_goods)
 
         # Define the consumer's budget constraint.
-        self.constraint = Input_Constraint(num_inputs=self.num_goods)
+        self.budget_constraint = Input_Constraint(num_inputs=num_goods)
 
         # Define an empty optimal value dictionary.
         self.opt_values_dict = {}
