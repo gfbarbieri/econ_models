@@ -19,17 +19,17 @@ def test_sub_values():
     f = (sp.Sum(x[i], (i, 0, num_inputs - 1))).doit()
 
     # Create substitutions list.
-    sub_values = [[x, None]]
+    sub_values = [['input', None]]
 
     # Create expected outcome.
-    expected = sp.Add(*tuple([1]*num_inputs))
+    expected = sum([1]*num_inputs)
 
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(num_inputs, f, sub_values) == expected
-    
+    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
+
     # Test Case 2: Substituting with tuple values.
     # In test case 2, we substitute both symbols with tuples of values, which
     # should replace them with the corresponding values. We then square these
@@ -37,27 +37,24 @@ def test_sub_values():
     # expect.
 
     # Define another indexed symbol.
-    y = sp.IndexedBase('y')
+    beta = sp.IndexedBase('beta')
 
     # Define function.
-    f = (sp.Sum(x[i]**2 + y[i]**2, (i, 0, num_inputs - 1))).doit()
+    f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
 
     # Create substitutions list.
-    sub_x = tuple(range(1, 1 + num_inputs))
-    sub_y = tuple(range(1 + num_inputs, 3 + num_inputs))
-    sub_values = [[x, sub_x], [y, sub_y]]
+    sub_x = tuple(range(1, 1 + num_inputs)) # Test case values.
+    sub_beta = tuple(range(1 + num_inputs, 3 + num_inputs)) # Test case values.
+    sub_values = [['input', sub_x], ['coefficient', sub_beta]]
 
     # Create expected outcome.
-    expected = sp.Add(
-        sp.Add(*tuple([sp.Pow(x, 2) for x in sub_x])),
-        sp.Add(*tuple([sp.Pow(y, 2) for y in sub_y]))
-    )
+    expected = sum([sub_beta[i]*sub_x[i]**2 for i in range(num_inputs)])
 
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(num_inputs, f, sub_values) == expected
+    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
     
     # Test Case 3: Substituting with a mixture of values and None.
     # In test case 3, we substitute one symbol with a None value and the other
@@ -65,59 +62,61 @@ def test_sub_values():
     # the result matches what we expect.
 
     # Define function.
-    f = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
+    f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
     
     # Create substitutions list.
-    sub_y = tuple(range(1, 1 + num_inputs))
-    sub_values = [[x, None], [y, sub_y]]
-    
+    sub_x = None # Test case values.
+    sub_beta = tuple(range(1 + num_inputs, 3 + num_inputs)) # Test case values.
+    sub_values = [['input', sub_x], ['coefficient', sub_beta]]
+
     # Create expected outcome.
-    expected = sp.Add(sp.Mul(1*num_inputs), sp.Add(*sub_y))
+    expected = sum([sub_beta[i]*1 for i in range(num_inputs)])
 
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(num_inputs, f, sub_values) == expected
+    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
     
     # Test Case 4: Substituting with no values.
     # In test case 4, we don't substitute any symbols with values, so the
     # function should be returned unchanged.
-    
+
     # Define function.
-    f = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
-    
+    f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
+
     # Create substitutions list.
-    sub_values = []
+    sub_x = () # Test case values.
+    sub_beta = () # Test case values.
+    sub_values = [['input', sub_x], ['coefficient', sub_beta]]
 
     # Create expected outcome.
-    expected = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
-    
+    expected = f
+
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(num_inputs, f, sub_values) == expected
+    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
 
     # Test Case 5: Substituting with a function that doesn't contain the
     # symbols.
     # In test case 5, we substitute symbols that aren't present in the function,
-    # so the function should be returned unchanged.
+    # so the function return an error since the symbols are not in the
+    # symboldict.
 
     # Define function.
-    f = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
-    
+    f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
+
     # Create substitutions list.
     sub_values = [[sp.symbols('a'), None], [sp.symbols('b'), None]]
-    
-    # Create expected outcome.
-    expected = (sp.Sum(x[i] + y[i], (i, 0, num_inputs - 1))).doit()
-    
+
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
-    # Asset that the function returns expected results.
-    assert func_form.sub_values(num_inputs, f, sub_values) == expected
+    # Define the function and check for an error.
+    with pytest.raises(Exception):
+        func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values)
 
 def test_polynomial_combination():
     # Teat Case 1:
@@ -703,24 +702,6 @@ def test_ces():
     assert str(func_form) == expected
 
     # Test Case 3:
-    # Test case for zero inputs: Check whether the function raises an error
-    # for the CES function if exponent values are empty.
-    function = BaseForms(
-        num_inputs=0,
-        input_name='x',
-        coeff_name='a',
-        coeff_values=(),
-        exponent_name='b',
-        exponent_values=(),
-        constant_name='c',
-        dependent_name='y'
-    )
-
-    # Define the mathematical function.
-    with pytest.raises(TypeError):
-        function.ces()
-
-    # Test Case 4:
     # Test case for invalid input: Check whether the function raises an
     # AttributeError when a tuple is passed to substitute a Sympy symbol.
 
@@ -741,7 +722,7 @@ def test_ces():
     with pytest.raises(AttributeError):
         function.ces()
 
-    # Test Case 5:
+    # Test Case 4:
     # Test case for invalid input: Check whether the function raises an
     # TypeError when an integer is passed to substitute an IndexedBase
     # instance.

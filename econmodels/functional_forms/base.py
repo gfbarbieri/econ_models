@@ -156,7 +156,7 @@ class BaseForms():
         symboldict : dict
             A dictionary of the functions symbols.
 
-        symbol_values : list
+        values : list
             A list of list of symbol-value pairs to substitute into the function.
             If the value is None, the symbol is substituted with 1s.
 
@@ -165,6 +165,13 @@ class BaseForms():
         SymPy expression
             The function with symbol values substituted in.
         """
+
+        # Check that the symbols in the symbol-value pairs are valid. That is,
+        # that they are included in the symboldict.
+        symbol_pairs = [pair[0] for pair in values]
+
+        if not all([sym in symboldict.keys() for sym in symbol_pairs]):
+            raise Exception(f"Some symbols missing from symbol_dict.")
 
         # Construct the substitution dictionary. It will be a dictionary where
         # they key's are the symbols in the function and the values are the
@@ -176,26 +183,23 @@ class BaseForms():
             # an 1.
             if value == None:
                 if type(symboldict[sym]) == sp.tensor.indexed.IndexedBase:
-                    sub_dict[symboldict[sym]] = tuple([1]*self.num_inputs)
+                    sub_dict.update({symboldict[sym]: tuple([1]*self.num_inputs)})
                 elif type(symboldict[sym]) == sp.core.symbol.Symbol:
-                    sub_dict[symboldict[sym]] = 1
-            # If the value is not None, then replace the symbol with the passed
-            # values. Since inputs are indexed, the values can't be assigned to
-            # the input symbol directly, but instead a key value pair is created
-            # for each index of the symbol.
+                    sub_dict.update({symboldict[sym]: 1})
+            # If the value is not None and not equal to 'symbol', then replace
+            # the symbol with the passed values.
             elif value is not None and value != 'symbol':
                 if sym == 'input':
-                    input_dict = {
-                        symboldict['input'][str(i)]: value[i] for i in range(len(value)) if value[i] is not None
-                    }
-                    sub_dict.update(input_dict)
+                    sub_dict.update(
+                        {symboldict['input'][str(i)]: value[i] for i in range(len(value)) if value[i] is not None}
+                    )
                 else:
-                    sub_dict[symboldict[sym]] = value
+                    sub_dict.update({symboldict[sym]: value})
 
         # Substitute symbols for values using the substitution dictionary.
         func = func.subs(sub_dict)
 
-        # Return the function with the values substituted for symbols.
+        # Return the final function with the values substituted for symbols.
         return func
 
     ##########################################################################
@@ -347,7 +351,7 @@ class BaseForms():
         func_form_sub = self.sub_values(
             func=func_form,
             symboldict=self.symboldict,
-            symbol_values=[
+            values=[
                 ['coefficient', self.coeff_values],
                 ['exponent', self.exponent_values],
                 ['constant', self.constant_value],
@@ -388,9 +392,9 @@ class BaseForms():
 
         # Substitute values for the symbols.
         func_form_sub = self.sub_values(
-            num_inputs=self.num_inputs,
             func=func_form,
-            symbol_values=[
+            symboldict=self.symboldict,
+            values=[
                 ['coefficient', self.coeff_values],
                 ['exponent', self.exponent_values],
                 ['constant', self.constant_value],
