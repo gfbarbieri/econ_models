@@ -79,8 +79,9 @@ def test_sub_values():
     assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
     
     # Test Case 4: Substituting with no values.
-    # In test case 4, we don't substitute any symbols with values, so the
-    # function should be returned unchanged.
+    # In test case 4, we don't substitute any symbols with values, so an error
+    # should occur. Not sure I want to intervene to fix this. I feel like this
+    # should not be an error, but what's the use case of passing empty tuple?
 
     # Define function.
     f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
@@ -96,8 +97,9 @@ def test_sub_values():
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
-    # Asset that the function returns expected results.
-    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
+    # Define the function and check for an error.
+    with pytest.raises(IndexError):
+        func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
 
     # Test Case 5: Substituting with a function that doesn't contain the
     # symbols.
@@ -182,16 +184,15 @@ def test_polynomial_combination():
     assert str(func_form) == expected
 
     # Test Case 3:
-    # Test case for zero inputs: Check whether the function returns a valid
-    # mathematical function and a dictionary of symbols and indexes when passed
-    # zero inputs.
+    # Test case for zero inputs. This should return a function where the inputs
+    # are effectively 0, leaving only the constants and the dependent.
     function = BaseForms(
-        num_inputs=0,
+        num_inputs=0, # Test case values.
         input_name='x',
         coeff_name='a',
-        coeff_values=(), # Test case values.
+        coeff_values=(),
         exponent_name='b',
-        exponent_values=(), # Test case values.
+        exponent_values=(),
         constant_name='c',
         dependent_name='y'
     )

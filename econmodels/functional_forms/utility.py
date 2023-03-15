@@ -87,12 +87,12 @@ class Utility(BaseForms):
 
         # Set utility function using a dictionary dispatcher.
         func_dict = {
-            'cobb-douglas': self.cobb_douglas,
-            'substitutes': self.substitutes,
-            'complements': self.complements,
             'ces': self.ces,
+            'cobb-douglas': self.cobb_douglas,
+            'complements': self.complements,
+            'polynomial': self.polynomial_combination,
             'quasi-linear': self.quasi_linear,
-            'polynomial': self.polynomial_combination
+            'substitutes': self.substitutes
         }
         
         self.function, self.symboldict = func_dict[func_form]()
@@ -125,9 +125,12 @@ class Utility(BaseForms):
             The utility value.
         """
 
+        # Solve for utility.
+        utility_expr = sp.solve(self.function, self.symboldict['dependent'])
+
         # Substitute values for symbols in the utility funciton.
-        utility_expr = self.sub_values(
-            func=self.function,
+        utility_expr_sub = self.sub_values(
+            func=utility_expr[0],
             symboldict=self.symboldict,
             values=[
                 ['input', input_values],
@@ -135,10 +138,7 @@ class Utility(BaseForms):
             ]
         )
 
-        # Solve for utility.
-        utility_expr = sp.solve(utility_expr, self.symboldict['dependent'])
-
-        return utility_expr
+        return utility_expr_sub
 
     def get_indifference(self, lhs=0, constant=None, dependent=None):
         """
