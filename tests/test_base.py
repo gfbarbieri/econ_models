@@ -2,6 +2,114 @@ import sympy as sp
 import pytest
 from econmodels.functional_forms.base import BaseForms
 
+def test_init():
+    # Test Case 1: Create a BaseForms object with no inputs. In test case 1,
+    # we create a BaseForms object with no inputs. We then check that the
+    # symboldict has the expected key values and that the key values are
+    # equal to names passed into the BaseForms class.
+    
+    # Instantiate class to access init function.
+    func_form = BaseForms(num_inputs=0)
+
+    # Assert that the symboldict is an instance of a dictionary.
+    assert isinstance(func_form.symboldict, dict)
+
+    # Check that the symboldict has expected key values.
+    assert all(key in func_form.symboldict.keys() for key in [
+        'coefficient', 'constant', 'dependent',
+        'exponent', 'input', 'i'
+    ])
+
+    # Check that the key values are equal to the names passed into the
+    # BaseForms class.
+    for key in func_form.symboldict.keys():
+        if key == 'input':
+            assert str(func_form.symboldict[key])  == func_form.input_name
+        elif key == 'exponent':
+            assert str(func_form.symboldict[key]) == func_form.exponent_name
+        elif key == 'coefficient':
+            assert str(func_form.symboldict[key]) == func_form.coeff_name
+        elif key == 'dependent':
+            assert str(func_form.symboldict[key]) == func_form.dependent_name
+        elif key == 'constant':
+            assert str(func_form.symboldict[key]) == func_form.constant_name
+
+    # Test Case 2: Create a BaseForms object with two inputs. In test case 2,
+    # we create a BaseForms object with two inputs. We then check that the
+    # symboldict has the expected key values.
+
+    # Instantiate class to access init function.
+    func_form = BaseForms(num_inputs=2)
+
+    # Assert that the symboldict is an instance of a dictionary.
+    assert isinstance(func_form.symboldict, dict)
+
+    # Check that the symboldict has expected key values.
+    assert all(key in func_form.symboldict.keys() for key in [
+        'coefficient', 'constant', 'dependent',
+        'exponent', 'input', 'i'
+    ])
+
+    # Check that the key values are equal to the names passed into the
+    # BaseForms class.
+    for key in func_form.symboldict.keys():
+        if key == 'input':
+            assert str(func_form.symboldict[key])  == func_form.input_name
+        elif key == 'exponent':
+            assert str(func_form.symboldict[key]) == func_form.exponent_name
+        elif key == 'coefficient':
+            assert str(func_form.symboldict[key]) == func_form.coeff_name
+        elif key == 'dependent':
+            assert str(func_form.symboldict[key]) == func_form.dependent_name
+        elif key == 'constant':
+            assert str(func_form.symboldict[key]) == func_form.constant_name
+
+    # Test Case 3: Create a BaseForms object with two inputs and custom names
+    # for the symbols. In test case 3, we create a BaseForms object with two
+    # inputs and custom names for the symbols. We then check that the
+    # symboldict has the expected key values.
+    
+    # Instantiate class to access init function.
+    func_form = BaseForms(
+        num_inputs=2,
+        input_name='x',
+        exponent_name='e',
+        coeff_name='c',
+        dependent_name='y',
+        constant_name='k'
+    )
+
+    # Assert that the symboldict is an instance of a dictionary.
+    assert isinstance(func_form.symboldict, dict)
+
+    # Check that the symboldict has expected key values.
+    assert all(key in func_form.symboldict.keys() for key in [
+        'coefficient', 'constant', 'dependent',
+        'exponent', 'input', 'i'
+    ])
+
+    # Check that the key values are equal to the names passed into the
+    # BaseForms class.
+    for key in func_form.symboldict.keys():
+        if key == 'input':
+            assert str(func_form.symboldict[key])  == func_form.input_name
+        elif key == 'exponent':
+            assert str(func_form.symboldict[key]) == func_form.exponent_name
+        elif key == 'coefficient':
+            assert str(func_form.symboldict[key]) == func_form.coeff_name
+        elif key == 'dependent':
+            assert str(func_form.symboldict[key]) == func_form.dependent_name
+        elif key == 'constant':
+            assert str(func_form.symboldict[key]) == func_form.constant_name
+
+    # Test Case 4: Create a BaseForms object with -1 inputs. In test case 3,
+    # we create a BaseForms object with -1 inputs. We then check that an
+    # exception is raised.
+
+    # Instantiate class to access init function.
+    with pytest.raises(Exception):
+        func_form = BaseForms(num_inputs=-1)
+
 def test_sub_values():
     # Test Case 1: Substituting with None values.
     # In test case 1, we substitute both symbols with None values, which should
@@ -28,7 +136,11 @@ def test_sub_values():
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
+    assert func_form.sub_values(
+        func=f,
+        symboldict=func_form.symboldict,
+        values=sub_values
+    ) == expected
 
     # Test Case 2: Substituting with tuple values.
     # In test case 2, we substitute both symbols with tuples of values, which
@@ -54,7 +166,11 @@ def test_sub_values():
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
+    assert func_form.sub_values(
+        func=f,
+        symboldict=func_form.symboldict,
+        values=sub_values
+     ) == expected
     
     # Test Case 3: Substituting with a mixture of values and None.
     # In test case 3, we substitute one symbol with a None value and the other
@@ -76,10 +192,36 @@ def test_sub_values():
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
-    
-    # Test Case 4: Substituting with no values.
-    # In test case 4, we don't substitute any symbols with values, so an error
+    assert func_form.sub_values(
+        func=f,
+        symboldict=func_form.symboldict,
+        values=sub_values
+    ) == expected
+
+    # Test Case 4: Substituting with an empty list.
+    # In test case 4, we substitute symbols with an empty list. The result
+    # is the function returned unchanged.
+
+    # Define function.
+    f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
+
+    # Create substitutions list.
+    sub_values = []
+
+    # Instantiate class to access sub_values function.
+    func_form = BaseForms()
+
+    # Define the function and check for an error.
+    expected = f
+
+    assert func_form.sub_values(
+        func=f,
+        symboldict=func_form.symboldict,
+        values=sub_values
+    ) == expected
+
+    # Test Case 5: Substituting with no values.
+    # In test case 5, we don't substitute any symbols with values, so an error
     # should occur. Not sure I want to intervene to fix this. I feel like this
     # should not be an error, but what's the use case of passing empty tuple?
 
@@ -89,7 +231,10 @@ def test_sub_values():
     # Create substitutions list.
     sub_x = () # Test case values.
     sub_beta = () # Test case values.
-    sub_values = [['input', sub_x], ['coefficient', sub_beta]]
+    sub_values = [
+        ['input', sub_x],
+        ['coefficient', sub_beta]
+    ]
 
     # Create expected outcome.
     expected = f
@@ -99,11 +244,15 @@ def test_sub_values():
 
     # Define the function and check for an error.
     with pytest.raises(IndexError):
-        func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values) == expected
+        func_form.sub_values(
+            func=f,
+            symboldict=func_form.symboldict,
+            values=sub_values
+        ) == expected
 
-    # Test Case 5: Substituting with a function that doesn't contain the
+    # Test Case 6: Substituting with a function that doesn't contain the
     # symbols.
-    # In test case 5, we substitute symbols that aren't present in the function,
+    # In test case 6, we substitute symbols that aren't present in the function,
     # so the function return an error since the symbols are not in the
     # symboldict.
 
@@ -111,14 +260,42 @@ def test_sub_values():
     f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
 
     # Create substitutions list.
-    sub_values = [[sp.symbols('a'), None], [sp.symbols('b'), None]]
+    sub_values = [
+        [sp.symbols('a'), None],
+        [sp.symbols('b'), None]
+    ]
 
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
 
     # Define the function and check for an error.
     with pytest.raises(Exception):
-        func_form.sub_values(func=f, symboldict=func_form.symboldict, values=sub_values)
+        func_form.sub_values(
+            func=f,
+            symboldict=func_form.symboldict,
+            values=sub_values
+        )
+
+    # Test Case 7: Substituting None type.
+    # In test case 7, we substitute symbols with None type. The result
+    # is the function returns an error.
+
+    # Define function.
+    f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
+
+    # Create substitutions list.
+    sub_values = None
+
+    # Instantiate class to access sub_values function.
+    func_form = BaseForms()
+
+    # Define the function and check for an error.
+    with pytest.raises(TypeError):
+        func_form.sub_values(
+            func=f,
+            symboldict=func_form.symboldict,
+            values=sub_values
+        )
 
 def test_polynomial_combination():
     # Teat Case 1:
@@ -148,15 +325,6 @@ def test_polynomial_combination():
     # Assert that the string version of the mathematical function is equal to
     # the expected function.
     assert str(func_form) == expected
-
-    # Assert that the symboldict is an instance of a dictionary.
-    assert isinstance(symboldict, dict)
-
-    # Check that the symboldict has expected key values.
-    assert all(key in symboldict.keys() for key in [
-        'coefficient', 'constant', 'dependent',
-        'exponent', 'input', 'i'
-    ])
 
     # Test Case 2:
     # Test case for a different number of inputs: Check whether the function
@@ -279,15 +447,6 @@ def test_cobb_douglas():
     # the expected function.
     assert str(func_form) == expected
 
-    # Assert that the symboldict is an instance of a dictionary.
-    assert isinstance(symboldict, dict)
-
-    # Check that the symboldict has expected key values.
-    assert all(key in symboldict.keys() for key in [
-        'coefficient', 'constant', 'dependent',
-        'input', 'exponent', 'i'
-    ])
-
     # Test Case 2:
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical equation and a dictionary of symbols and
@@ -408,15 +567,6 @@ def test_substitutes():
     # Assert that the string version of the mathematical is equal to the 
     # expected function.
     assert str(func_form) == expected
-
-    # Assert that the symboldict is an instance of a dictionary.
-    assert isinstance(symboldict, dict)
-
-    # Check that the symboldict has expected key values.
-    assert all(key in symboldict.keys() for key in [
-        'coefficient', 'constant', 'dependent',
-        'input', 'exponent', 'i'
-    ])
 
     # Test Case 2:
     # Test case for a different number of inputs: Check whether the function
@@ -540,15 +690,6 @@ def test_complements():
     # the expected function.
     assert str(func_form) == expected
 
-    # Assert that the symboldict is an instance of a dictionary.
-    assert isinstance(symboldict, dict)
-
-    # Check that the symboldict has expected key values.
-    assert all(key in symboldict.keys() for key in [
-        'coefficient', 'constant', 'dependent',
-        'input', 'exponent', 'i'
-    ])
-
     # Test Case 2:
     # Test case for a different number of inputs: Check whether the function
     # returns a valid mathematical equation and a dictionary of symbols and
@@ -665,18 +806,6 @@ def test_ces():
 
     # Define expected outcome.
     expected = 'c + 2*x[0] + 3*x[1] - 1'
-
-    # Assert that the string function is equal to the expected function.
-    assert str(func_form) == expected
-
-    # Assert that the symboldict is an instance of a dictionary.
-    assert isinstance(symboldict, dict)
-
-    # Check that the symboldict has expected key values.
-    assert all(key in symboldict.keys() for key in [
-        'coefficient', 'constant', 'dependent',
-        'input', 'exponent', 'i'
-    ])
 
     # Test Case 2:
     # Test case for a different number of inputs: Check whether the function

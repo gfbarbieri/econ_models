@@ -1,5 +1,6 @@
 # econmodels.agents.consumer
-# Classes for economic agents.
+# A class representing a standard consumer with a utility funciton and budget
+# constraint.
 #
 # Author:   Greg Barbieri
 #
@@ -24,26 +25,15 @@ from ..functional_forms.constraint import Input_Constraint
 
 class Consumer():
     """
-    A consumer is a combination of a utility function and a budget
-    constraint. Prices are exogenous, that is, the consumer is a price
-    taker. In addition, the parameters of the utility function are
-    exogenous and are created when the consumer is initiated.
-
-    A utility represents the satisfaction of a consumer's wants, goals,
-    or preferences. Inputs into the utility function are goods or
-    characteristics of goods. The goods or characteristics are combined
-    together in order to accomplish the consumer's goals. Taking prices
-    as given, consumers use either budget and exogenous prices to
-    purchase goods/characteristics in order to satisfify their
-    goals/preferences as completely as possible (maximization).
-
-    From utility maximization, demand for each good can calculated.
-    Demand functions are the relationship between the unit price and
-    rate of quantity demanded that maximizes utility, holding all else
-    constant.
+    A class representing a consumer with a utility function and budget constraint.
+    The class can find the optimal values of goods to purchase, given the budget
+    constraint, using the Lagrangian method. The class can also query the demand
+    for a quantity of a specific good.
 
     Attributes
     ----------
+    num_goods : int
+        The number of goods.
 
     Parameters
     ----------
@@ -54,7 +44,16 @@ class Consumer():
 
     def __init__(self, num_goods=2):
         """
-        Define the consumers utility function and budget constraint.
+        Initializes the Consumer object by defining the number of goods, the consumer's utility function, and the budget constraint.
+
+        Parameters
+        ----------
+        num_goods : int, optional
+            The number of goods. The default is 2.
+
+        Example
+        -------
+        >>> consumer = Consumer(num_goods=3)
         """
 
         # Define number of goods.
@@ -79,8 +78,8 @@ class Consumer():
 
     def maximize_utility(self):
         """
-        This function maximizes utility subject to a budget constraint. The
-        Lagrangian method is used.
+        Finds the optimal values of goods to purchase given the budget constraint,
+        using the Lagrangian method.
                 
         Parameters
         ----------
@@ -90,6 +89,8 @@ class Consumer():
 
         Examples
         --------
+        >>> consumer = Consumer()
+        >>> consumer.maximize_utility()
         """
 
         # Solve for utility in terms of the other variables and values.
@@ -129,17 +130,24 @@ class Consumer():
 
     def get_demand(self, index):
         """
-        Query the demand for a quantity from the consumer's dictionary
-        of optimal values.
- 
+        Queries the demand for a quantity from the consumer's dictionary of
+        optimal values.
+
         Parameters
         ----------
+        index : int
+            The index of the good for which to query the demand.
 
         Returns
         -------
+        demand : SymPy expression
+            The demand for the good.
 
         Examples
         --------
+        >> consumer = Consumer()
+        >> consumer.maximize_utility()
+        >> consumer.get_demand(index=0)
         """
 
         if not self.opt_values_dict:

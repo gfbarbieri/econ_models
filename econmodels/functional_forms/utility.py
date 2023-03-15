@@ -86,16 +86,16 @@ class Utility(BaseForms):
         )
 
         # Set utility function using a dictionary dispatcher.
-        func_dict = {
+        func_form_dict = {
             'ces': self.ces,
             'cobb-douglas': self.cobb_douglas,
             'complements': self.complements,
             'polynomial': self.polynomial_combination,
-            'quasi-linear': self.quasi_linear,
+            # 'quasi-linear': self.quasi_linear,
             'substitutes': self.substitutes
         }
         
-        self.function, self.symboldict = func_dict[func_form]()
+        self.function, self.symboldict = func_form_dict[func_form]()
 
     def get_utility(self, input_values, constant):
         """
@@ -143,14 +143,13 @@ class Utility(BaseForms):
     def get_indifference(self, lhs=0, constant=None, dependent=None):
         """
         This function creates the indifferene curve for the indexed inputs. The
-        required input is the indexed good on the left hand side of the
-        indifference curve. Users can pass a value of the dependent variable
-        (utility) and any constant values.
+        indifference curve is simply the relationship between the indexed input
+        values where the level of utility is held constant. Users can define
+        the both the level of utility and any constant values over which the
+        indexed inputs will vary.
 
         Parameters
         ----------
-        lhs : 0 or int
-
         constant : None or int
 
         dependent : None or int
@@ -162,7 +161,7 @@ class Utility(BaseForms):
         """
 
         # Substitute values for symbols in the utility funciton.
-        utility_expr = self.sub_values(
+        indiff_expr = self.sub_values(
             func=self.function,
             symboldict=self.symboldict,
             values=[
@@ -171,43 +170,36 @@ class Utility(BaseForms):
             ]
         )
 
-        # Solve the utility function in terms of the indexed inputs and other 
-        # variables.
-        indiff_expr = sp.solve(utility_expr, self.symboldict['input'][lhs])
-
         return indiff_expr
 
-    def marginal_utility(self, indx=0, constant=None, dependent=None):
+    def marginal_utility(self, indx=0, subs=[]):
         """
         This function calculates the marginal utility for an input.
 
         Parameters
         ----------
         indx : int
+            The index of the input for which the marginal utility is calculated.
 
-        constant : None or int
-
-        dependent : None or int
+        subs : list
+            A list of values to substitute in the utility function.
         
         Returns
         -------
         SymPy expression.
-            The indifference curve.
+            The marginal utility for the indexed input.
         """
     
         # Substitute values for symbols in the utility funciton.
         utility_expr = self.sub_values(
             func=self.function,
             symboldict=self.symboldict,
-            values=[
-                ['constant', constant],
-                ['dependent', dependent]
-            ]
+            values=subs
         )
 
         # Solve the utility function such that the dependent variable is on the
         # LHS and interms of all other variables.
-        utility_expr = sp.solve(self.function, self.symboldict['dependent'])[0]
+        utility_expr = sp.solve(utility_expr, self.symboldict['dependent'])[0]
 
         # Take the first derivative with respect to the indexed good.
         mu_expr = sp.diff(utility_expr, self.symboldict['input'][indx])
