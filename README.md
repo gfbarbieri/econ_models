@@ -30,7 +30,7 @@ utility.function
 
 
 
-$\displaystyle C - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
+$C - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
 
 
 
@@ -63,7 +63,7 @@ utility.marginal_utility(indx=0).simplify()
 
 
 
-$\displaystyle {\alpha}_{0} {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0} - 1} {x}_{1}^{{\alpha}_{1}}$
+${\alpha}_{0} {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0} - 1} {x}_{1}^{{\alpha}_{1}}$
 
 
 
@@ -77,7 +77,7 @@ utility.get_utility(input_values=[1,4], constant=None)
 
 
 
-$\displaystyle 4^{{\alpha}_{1}} {\beta}_{0} {\beta}_{1} + 1$
+$4^{{\alpha}_{1}} {\beta}_{0} {\beta}_{1} + 1$
 
 
 
@@ -109,7 +109,7 @@ consumer.utility.function
 
 
 
-$\displaystyle C - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
+$C - U + {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0}} {x}_{1}^{{\alpha}_{1}}$
 
 
 
@@ -123,7 +123,7 @@ consumer.constraint.function
 
 
 
-$\displaystyle B - M + {p_{}}_{0} {x}_{0} + {p_{}}_{1} {x}_{1}$
+$B - M + {p_{}}_{0} {x}_{0} + {p_{}}_{1} {x}_{1}$
 
 
 
@@ -160,6 +160,6 @@ consumer.get_demand(index=0)
 
 
 
-$\displaystyle \frac{\left(- B + M\right) {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p_{}}_{0}} - {x}_{0}$
+$\frac{\left(- B + M\right) {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p_{}}_{0}} - {x}_{0}$
 
 
