@@ -56,10 +56,9 @@ class Consumer():
     >>> consumer = Consumer()
     >>> consumer.maximize_utility()
     >>> consumer.opt_values_dict
-
     """
 
-    def __init__(self, num_goods=2):
+    def __init__(self, num_goods=2, util_form='cobb-douglas'):
         """
         Initializes the Consumer object by defining the number of goods, the consumer's utility function, and the budget constraint.
 
@@ -67,10 +66,15 @@ class Consumer():
         ----------
         num_goods : int, optional
             The number of goods. The default is 2.
+        
+        func_form : string, optional
+            The functional form of the utility function. The default is 'cobb-douglas'.
 
-        Example
-        -------
-        >>> consumer = Consumer(num_goods=3)
+        Examples
+        --------
+        >>> consumer = Consumer()
+        >>> consumer.maximize_utility()
+        >>> consumer.opt_values_dict
         """
 
         # Define number of goods.
@@ -79,7 +83,8 @@ class Consumer():
         # Define the consumer's utility function.
         self.utility = Utility(
             num_inputs=num_goods,
-            constant_name='C'
+            constant_name='C',
+            func_form=util_form
         )
 
         # Define the consumer's budget constraint.

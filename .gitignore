@@ -128,3 +128,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignore files underdevelopment:
+firm.py
+production.py
+markets.py
+visualization/
+
+# Irrelevant files:
+notebooks/bundling_generalized.ipynb
+notebooks/demand.py
+notebooks/monopolist.py
+notebooks/price_discrimination.ipynb
+notebooks/README.ipynb
+notebooks/test_functionality.ipynb
