@@ -58,9 +58,15 @@ class Utility(BaseForms):
 
     Attributes
     ----------
+    num_inputs : int
+        The number of goods/characteristics that are inputs into the consumer's utility function and
+        budget constraint.
 
     Examples
     --------
+    >>> utility = Utility()
+    >>> utility.maximize_utility()
+    >>> utility.opt_values_dict
     """
 
     def __init__(
@@ -123,6 +129,12 @@ class Utility(BaseForms):
         -------
         float
             The utility value.
+
+        Examples
+        --------
+        >>> utility = Utility()
+        >>> utility.get_utility(input_values=[1,2], constant=0)
+        2.0
         """
 
         # Solve for utility.
@@ -140,7 +152,7 @@ class Utility(BaseForms):
 
         return utility_expr_sub
 
-    def get_indifference(self, lhs=0, constant=None, dependent=None):
+    def get_indifference(self, constant=None, dependent=None):
         """
         This function creates the indifferene curve for the indexed inputs. The
         indifference curve is simply the relationship between the indexed input
@@ -151,13 +163,21 @@ class Utility(BaseForms):
         Parameters
         ----------
         constant : None or int
+            The value of the constant inputs.
 
         dependent : None or int
+            The value of the dependent variable.
         
         Returns
         -------
         SymPy expression.
             The indifference curve.
+
+        Examples
+        --------
+        >>> utility = Utility()
+        >>> utility.get_indifference(constant=0, dependent=1)
+        1.0
         """
 
         # Substitute values for symbols in the utility funciton.
@@ -188,6 +208,13 @@ class Utility(BaseForms):
         -------
         SymPy expression.
             The marginal utility for the indexed input.
+
+        Examples
+        --------
+        >>> utility = Utility()
+        >>> utility.marginal_utility(indx=0, subs=[['coefficient',1]])
+        2.0
+
         """
     
         # Substitute values for symbols in the utility funciton.

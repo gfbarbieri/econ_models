@@ -45,21 +45,6 @@ class Market(BaseForms):
 
         pass
 
-    def set_params(self):
-        """ Set the parameters of the function.
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        """
-        pass
-
     def get_price(self):
         """ This function calculates the price given a quantity `q`.
 
@@ -82,26 +67,6 @@ class Market(BaseForms):
 
         Returns
         -------
-
-        Examples
-        --------
-        """
-        pass
-
-    def get_price_elasticity(self):
-        """ This function calculates the price elasticity of quantity.
-
-        Parameters
-        ----------
-        p_0 : float or Sympy symbol, optional, default: None
-            The unit price of quantity.
-        q_0 : float or Sympy symbol, optional, default: None
-            The rate of quantity.
-    
-        Returns
-        -------
-        float or Sympy symbol
-            The price elasticity of quantity at a specified price and quantity.
 
         Examples
         --------

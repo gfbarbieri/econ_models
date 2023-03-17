@@ -22,7 +22,7 @@ import sympy as sp
 
 class BaseForms():
     """
-    The FunctionalForm class returns common functional forms used in economics
+    The BaseForms class returns common functional forms used in economics
     to represent utility and production functions. Each function form follows
     a similar pattern: define the symbols used, create the index range for
     the inputs, define how form the inputs will take, define the functional form
