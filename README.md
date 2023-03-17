@@ -10,6 +10,14 @@ Import `Utility` which gives you access to several fucntional forms of utility f
 
 
 ```python
+import sympy as sp
+import pytest
+
+# Get access to local modeuls.
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
+
 from econmodels.functional_forms.utility import Utility
 ```
 
@@ -64,6 +72,25 @@ utility.marginal_utility(indx=0).simplify()
 
 
 $${\alpha}_{0} {\beta}_{0} {\beta}_{1} {x}_{0}^{{\alpha}_{0} - 1} {x}_{1}^{{\alpha}_{1}}$$
+
+
+
+Print marginal utility of $x_0$ with substitutions.
+
+
+```python
+subs = [
+    ['coefficient', (1,2)],
+    ['exponent', (1,2)]
+]
+
+utility.marginal_utility(indx=0, subs=subs).simplify()
+```
+
+
+
+
+$$2 {x}_{1}^{2}$$
 
 
 
@@ -154,12 +181,70 @@ Show the demand for input $x_0$ as a homogenous equation.
 
 
 ```python
-consumer.get_demand(index=0)
+consumer.get_demand(indx=0)
 ```
 
 
 
 
 $$\frac{\left(- B + M\right) {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p_{}}_{0}} - {x}_{0}$$
+
+
+
+Calculate price elasticity of quantity demanded for good 0.
+
+
+```python
+consumer.get_elasticity(input_indx=0, var='p_', var_indx=0)
+```
+
+
+
+
+$$- \frac{\left(- B + M\right) {\alpha}_{0} p_{}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p_{}}_{0}^{2} {x}_{0}}$$
+
+
+
+Calculate income elasticity of quantity demanded for good 0.
+
+
+```python
+consumer.get_elasticity(input_indx=0, var='M', var_indx=0)
+```
+
+
+
+
+$$\frac{M {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p_{}}_{0} {x}_{0}}$$
+
+
+
+Calculate price elasticity of quantity demanded for good 0 at a point
+where the price of good 0 is equal to quantity demanded.
+
+
+```python
+consumer.get_elasticity(input_indx=0, var='p_', var_indx=0, point=(1,1))
+```
+
+
+
+
+$$- \frac{\left(- B + M\right) {\alpha}_{0}}{\left({\alpha}_{0} + {\alpha}_{1}\right) {p_{}}_{0}^{2}}$$
+
+
+
+Calculate cross-price elasticity of quantity demanded for good 0 with
+respect to the price of good 1.
+
+
+```python
+consumer.get_elasticity(input_indx=0, var='p_', var_indx=1)
+```
+
+
+
+
+$$0$$
 
 
