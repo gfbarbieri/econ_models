@@ -6,7 +6,7 @@ Functions to test the Utility class.
 """
 
 def test_init():
-    # Test Case 1: Create Cobb-Douglas utility function with two inputs.
+    # Test Case 1: Create multiplicative utility function with two inputs.
     # In test case 1, we create a Utility object with two inputs with the 
     # function form of a cob-douglas utility function. We check that the
     # utility function is correct and that the symboldict has the expected key
@@ -20,7 +20,7 @@ def test_init():
     util = Utility(
         num_inputs=num_inputs,
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the expected utility function.
@@ -62,8 +62,8 @@ def test_init():
     # Define the utility function.
     util = Utility(
         num_inputs=num_inputs,
-        coeff_values=3,
-        func_form='complements'
+        coeff_values=(1,1),
+        func_form='minimum'
     )
 
     # Define expected utility function.
@@ -106,11 +106,11 @@ def test_init():
     util = Utility(
         num_inputs=num_inputs,
         coeff_values=(3,3),
-        func_form='substitutes'
+        func_form='additive'
     )
 
     # Define expected utility function.
-    expected = 'C - U + 3*x[0] + 3*x[1]'
+    expected = 'C - U + 3*x[0]**alpha[0] + 3*x[1]**alpha[1]'
 
     # Check that the utility function is correct.
     assert str(util.function) == expected
@@ -183,7 +183,7 @@ def test_init():
             assert str(util.symboldict[key]) == util.constant_name
 
 def test_get_utility():
-    # Test Case 1: Create a Cobb-Douglas utility function with two inputs.
+    # Test Case 1: Create a multiplicative utility function with two inputs.
     # Substitute valid values into the utility function and check that the
     # resulting utility function is correct.
 
@@ -195,7 +195,7 @@ def test_get_utility():
         num_inputs=num_inputs,
         coeff_values=(2,2),
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the expected utility function.
@@ -205,7 +205,7 @@ def test_get_utility():
     assert str(util.function) == expected
 
     # Substitute vaid values into the utility function.
-    u = util.get_utility(input_values=[1,1], constant=1)
+    u = util.get_utility(input_values=(1,1), constant=1)
 
     # Define expected utility.
     expected = 5
@@ -214,7 +214,7 @@ def test_get_utility():
     assert u == 5
 
 def test_get_indifference():
-    # Test Case 1: Create a Cobb-Douglas utility function with two inputs.
+    # Test Case 1: Create a multiplicative utility function with two inputs.
     # Do not explicitly pass values for the constant and the coefficients in
     # the get_indifference method. Check that the indifference curve is
     # correct.
@@ -226,7 +226,7 @@ def test_get_indifference():
     util = Utility(
         num_inputs=num_inputs,
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the expected indifference curve.
@@ -235,7 +235,7 @@ def test_get_indifference():
     # Check that the indifference curve is correct.
     assert str(util.get_indifference()) == expected
 
-    # Test Case 2: Create a Cobb-Douglas utility function with two inputs.
+    # Test Case 2: Create a multiplicative utility function with two inputs.
     # Explicitly pass values for the constant and the coefficients in the 
     # get_indifference method. Check that the indifference curve is correct.
 
@@ -243,7 +243,7 @@ def test_get_indifference():
     util = Utility(
         num_inputs=num_inputs,
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the expected indifference curve.
@@ -252,7 +252,7 @@ def test_get_indifference():
     # Check that the indifference curve is correct.
     assert str(util.get_indifference(constant=5, dependent=3)) == expected
 
-    # Test Case 3: Create a Cobb-Douglas utility function with two inputs.
+    # Test Case 3: Create a multiplicative utility function with two inputs.
     # Explicitly pass negative values for the constant and the coefficients
     # in the get_indifference method. Check that the indifference curve is
     # correct.
@@ -262,7 +262,7 @@ def test_get_indifference():
     util = Utility(
         num_inputs=num_inputs,
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the expected indifference curve.
@@ -272,7 +272,7 @@ def test_get_indifference():
     assert str(util.get_indifference(constant=-5, dependent=-3)) == expected
 
 def test_marginal_utility():
-    # Test Case 1: Create a Cobb-Douglas utility function with two inputs.
+    # Test Case 1: Create a multiplicative utility function with two inputs.
     # Calculate the marginal utility for each input and check that the
     # marginal utility is correct.
     
@@ -283,7 +283,7 @@ def test_marginal_utility():
     util = Utility(
         num_inputs=num_inputs,
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the expected marginal utility for indexed input 0.
@@ -298,7 +298,7 @@ def test_marginal_utility():
     # Check that the marginal utility for indexed input 1 is correct.
     assert str(util.marginal_utility(indx=1)) == expected
 
-    # Test Case 2: Create a Cobb-Douglas utility function with two inputs.
+    # Test Case 2: Create a multiplicative utility function with two inputs.
     # Calculate the marginal rate of substitution as the ratio of the
     # marginal utility of indexed input 0 to the marginal utility of 
     # indexed input 1. Check that the marginal rate of substitution is
@@ -308,7 +308,7 @@ def test_marginal_utility():
     util = Utility(
         num_inputs=num_inputs,
         exponent_values=(2,2),
-        func_form='cobb-douglas'
+        func_form='multiplicative'
     )
 
     # Define the marginal utility for indexed input 0.

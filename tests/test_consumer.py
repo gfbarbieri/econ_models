@@ -5,7 +5,7 @@ from econmodels.functional_forms.utility import Utility
 from econmodels.functional_forms.constraint import Input_Constraint
 
 def test_init():
-
+    # Test the default initialization.
     consumer = Consumer()
     
     assert consumer.num_goods == 2

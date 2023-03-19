@@ -325,7 +325,8 @@ class BaseForms():
             A dictionary of the symbols and indexes used in the function.
         """
 
-        # Define the functional form of the inputs for a multiplicative function.
+        # Define the functional form of the inputs for a multiplicative
+        # function.
         input_form = (
             self.symbol_dict['coefficient'][self.symbol_dict['i']] *
             self.symbol_dict['input'][self.symbol_dict['i']]**
@@ -355,7 +356,10 @@ class BaseForms():
 
     def minimum_function(self):
         """
-        Construct a minimum function of inputs: \min{x_0, x_1, x_2,..., x_n}.
+        Construct a minimum function of inputs. The functional form is:
+        \min{x_0, x_1, x_2,..., x_n} - Y. Each input is included only once.
+        The dependent variable is included in the functional form as the
+        function is a homogenous function.
 
         Returns
         -------
@@ -368,14 +372,14 @@ class BaseForms():
         
         # Define the form of the inputs to be the minimum.
         input_form = sp.Min(
-            *[self.symbol_dict['input'][i] for i in range(self.num_inputs)]
+            *[self.symbol_dict['coefficient'][i]*self.symbol_dict['input'][i] for i in range(self.num_inputs)]
         )
 
         # Define the functional form.
         func_form = input_form - self.symbol_dict['dependent']
 
-        # Substitute the symbols in the function with the passed values or with a
-        # value of 1 if None.
+        # Substitute the symbols in the function with the passed values or with
+        # a value of 1 if None.
         func_form_sub = self.sub_symbols(
             func=func_form,
             symbol_values={
@@ -398,7 +402,8 @@ class BaseForms():
             The CES function expression.
 
         symbol_dict : dict
-            A dictionary of the symbols and indexes used in the function expression.
+            A dictionary of the symbols and indexes used in the function
+            expression.
         """
 
         # For this version of the CES function, exponents are not indexed.
@@ -408,22 +413,27 @@ class BaseForms():
         # Define the form of the inputs into CES function.
         input_form = (
             self.symbol_dict['coefficient'][self.symbol_dict['i']] *
-            self.symbol_dict['input'][self.symbol_dict['i']]#**self.symbol_dict['exponent']
+            self.symbol_dict['input'][self.symbol_dict['i']]**exponent
         )
 
         # Define the functional form.
         func_form = (
-            sp.Sum(input_form, self.irange)+#**(1/self.symbol_dict['exponent']) +
+            sp.Sum(input_form, self.irange)**(1/exponent) +
             self.symbol_dict['constant'] -
             self.symbol_dict['dependent']
         ).doit()
 
-        # Substitute values for the symbols.
+        # Substitute values for the symbols. Pass a custom symbol_dict to
+        # sub_symbols to update the exponent symbol.
+        cust_dict = self.symbol_dict.copy()
+        cust_dict['exponent'] = exponent
+
         func_form_sub = self.sub_symbols(
             func=func_form,
+            symbol_dict=cust_dict,
             symbol_values={
                 self.symbol_dict['coefficient']: self.coeff_values,
-                self.symbol_dict['exponent']: exponent,
+                exponent: self.exponent_values,
                 self.symbol_dict['constant']: self.constant_value,
                 self.symbol_dict['dependent']: self.dependent_value
             }

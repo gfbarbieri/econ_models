@@ -10,7 +10,7 @@ A class representing a utility function used by economic agents.
 """
 
 # Available utility functional forms.
-_utils_ = ['cobb-douglas','substitutes','complements','ces','polynomial','quasi-linear']
+_utils_ = ['additive','multiplicative','minimum','ces']
 
 ##########################################################################
 ## Imports
@@ -72,11 +72,11 @@ class Utility(BaseForms):
     def __init__(
         self,
         num_inputs=2, input_name='x',
-        coeff_name='beta', coeff_values='symbol',
-        exponent_name='alpha', exponent_values='symbol',
-        dependent_name='U', dependent_value='symbol',
-        constant_name='C', constant_value='symbol',
-        func_form='cobb-douglas'
+        coeff_name='beta', coeff_values='symbols',
+        exponent_name='alpha', exponent_values='symbols',
+        dependent_name='U', dependent_value='symbols',
+        constant_name='C', constant_value='symbols',
+        func_form='multiplicative'
     ):
         # Check that functional form is supported.
         if func_form not in _utils_:
@@ -93,37 +93,28 @@ class Utility(BaseForms):
 
         # Set utility function using a dictionary dispatcher.
         func_form_dict = {
+            'additive': self.additive,
+            'multiplicative': self.multiplicative,
+            'minimum': self.minimum_function,
             'ces': self.ces,
-            'cobb-douglas': self.cobb_douglas,
-            'complements': self.complements,
-            'polynomial': self.polynomial_combination,
-            # 'quasi-linear': self.quasi_linear,
-            'substitutes': self.substitutes
         }
         
         self.function, self.symboldict = func_form_dict[func_form]()
 
     def get_utility(self, input_values, constant):
         """
-        This function calculates the total utility given a quantities of the goods (inputs
-        variable).
-
-        The expectation is that this function will take as arguments values for the goods
-        included in the utilty funciton. The function will substitute the variable for the
-        passed values for the goods, solve for utility (dependent variable), and return the
-        resulting utility as total utility.
-        
-        The user should be able to pass values for any specific indexed goods in the utility
-        function, no values, or values for all indexed goods. The indexed goods for which no
-        value was passed, the value should remain it's current value which may be a symbol.
-        
-        Get the utility value given input values.
+        This function calculates the total utility given a quantities of the
+        goods (inputs variable). The function also allows for the substitution
+        of constant values into the utility function. This is useful for
+        calculating the utility of a specific bundle of goods.
         
         Parameters
         ----------
-        input_values : list
-            A list of input values to substitute in the utility function.
-            If an element in the list is None, the corresponding input value in the utility function is retained.
+        input_values : tuple
+            The values of the indexed inputs.
+
+        constant : float
+            The value of the constant.
         
         Returns
         -------
@@ -141,13 +132,12 @@ class Utility(BaseForms):
         utility_expr = sp.solve(self.function, self.symboldict['dependent'])
 
         # Substitute values for symbols in the utility funciton.
-        utility_expr_sub = self.sub_values(
+        utility_expr_sub = self.sub_symbols(
             func=utility_expr[0],
-            symboldict=self.symboldict,
-            values=[
-                ['input', input_values],
-                ['constant', constant]
-            ]
+            symbol_values={
+                self.symbol_dict['input']: input_values,
+                self.symbol_dict['constant']: constant
+            }
         )
 
         return utility_expr_sub
@@ -181,28 +171,30 @@ class Utility(BaseForms):
         """
 
         # Substitute values for symbols in the utility funciton.
-        indiff_expr = self.sub_values(
+        indiff_expr = self.sub_symbols(
             func=self.function,
-            symboldict=self.symboldict,
-            values=[
-                ['constant', constant],
-                ['dependent', dependent]
-            ]
+            symbol_values={
+                self.symbol_dict['constant']: constant,
+                self.symbol_dict['dependent']: dependent
+            }
         )
 
         return indiff_expr
 
-    def marginal_utility(self, indx=0, subs=[]):
+    def marginal_utility(self, indx=0, subs={}):
         """
-        This function calculates the marginal utility for an input.
+        This function calculates the marginal utility for an input. The function
+        also allows for the substitution of constant values into the utility
+        function. This is useful for calculating the marginal utility of a
+        specific bundle of goods.
 
         Parameters
         ----------
         indx : int
             The index of the input for which the marginal utility is calculated.
 
-        subs : list
-            A list of values to substitute in the utility function.
+        subs : tuple
+            A tuple of values to substitute in the utility function.
         
         Returns
         -------
@@ -214,14 +206,12 @@ class Utility(BaseForms):
         >>> utility = Utility()
         >>> utility.marginal_utility(indx=0, subs=[['coefficient',1]])
         2.0
-
         """
     
         # Substitute values for symbols in the utility funciton.
-        utility_expr = self.sub_values(
+        utility_expr = self.sub_symbols(
             func=self.function,
-            symboldict=self.symboldict,
-            values=subs
+            symbol_values=subs
         )
 
         # Solve the utility function such that the dependent variable is on the
