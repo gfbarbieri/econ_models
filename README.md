@@ -10,14 +10,6 @@ Import `Utility` which gives you access to several fucntional forms of utility f
 
 
 ```python
-import sympy as sp
-import pytest
-
-# Get access to local modeuls.
-import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
-
 from econmodels.functional_forms.utility import Utility
 ```
 

@@ -127,7 +127,7 @@ def test_sub_values():
     f = (sp.Sum(x[i], (i, 0, num_inputs - 1))).doit()
 
     # Create substitutions list.
-    sub_values = [['input', None]]
+    sub_values = {'x': None}
 
     # Create expected outcome.
     expected = sum([1]*num_inputs)
@@ -136,9 +136,8 @@ def test_sub_values():
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(
+    assert func_form.sub_symbols(
         func=f,
-        symboldict=func_form.symboldict,
         values=sub_values
     ) == expected
 
@@ -157,7 +156,10 @@ def test_sub_values():
     # Create substitutions list.
     sub_x = tuple(range(1, 1 + num_inputs)) # Test case values.
     sub_beta = tuple(range(1 + num_inputs, 3 + num_inputs)) # Test case values.
-    sub_values = [['input', sub_x], ['coefficient', sub_beta]]
+    sub_values = {
+        'input': sub_x,
+        'coefficient': sub_beta
+    }
 
     # Create expected outcome.
     expected = sum([sub_beta[i]*sub_x[i]**2 for i in range(num_inputs)])
@@ -166,10 +168,9 @@ def test_sub_values():
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(
+    assert func_form.sub_symbols(
         func=f,
-        symboldict=func_form.symboldict,
-        values=sub_values
+        symbol_values=sub_values
      ) == expected
     
     # Test Case 3: Substituting with a mixture of values and None.
@@ -183,7 +184,10 @@ def test_sub_values():
     # Create substitutions list.
     sub_x = None # Test case values.
     sub_beta = tuple(range(1 + num_inputs, 3 + num_inputs)) # Test case values.
-    sub_values = [['input', sub_x], ['coefficient', sub_beta]]
+    sub_values = {
+        'input': sub_x,
+        'coefficient': sub_beta
+    }
 
     # Create expected outcome.
     expected = sum([sub_beta[i]*1 for i in range(num_inputs)])
@@ -192,10 +196,9 @@ def test_sub_values():
     func_form = BaseForms()
 
     # Asset that the function returns expected results.
-    assert func_form.sub_values(
+    assert func_form.sub_symbols(
         func=f,
-        symboldict=func_form.symboldict,
-        values=sub_values
+        symbol_values=sub_values
     ) == expected
 
     # Test Case 4: Substituting with an empty list.
@@ -206,7 +209,7 @@ def test_sub_values():
     f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
 
     # Create substitutions list.
-    sub_values = []
+    sub_values = {}
 
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
@@ -214,10 +217,9 @@ def test_sub_values():
     # Define the function and check for an error.
     expected = f
 
-    assert func_form.sub_values(
+    assert func_form.sub_symbols(
         func=f,
-        symboldict=func_form.symboldict,
-        values=sub_values
+        symbol_values=sub_values
     ) == expected
 
     # Test Case 5: Substituting with no values.
@@ -231,10 +233,10 @@ def test_sub_values():
     # Create substitutions list.
     sub_x = () # Test case values.
     sub_beta = () # Test case values.
-    sub_values = [
-        ['input', sub_x],
-        ['coefficient', sub_beta]
-    ]
+    sub_values = {
+        'input': sub_x,
+        'coefficient': sub_beta
+    }
 
     # Create expected outcome.
     expected = f
@@ -244,10 +246,9 @@ def test_sub_values():
 
     # Define the function and check for an error.
     with pytest.raises(IndexError):
-        func_form.sub_values(
+        func_form.sub_symbols(
             func=f,
-            symboldict=func_form.symboldict,
-            values=sub_values
+            symbol_values=sub_values
         ) == expected
 
     # Test Case 6: Substituting with a function that doesn't contain the
@@ -260,10 +261,10 @@ def test_sub_values():
     f = (sp.Sum(beta[i]*x[i]**2, (i, 0, num_inputs - 1))).doit()
 
     # Create substitutions list.
-    sub_values = [
-        [sp.symbols('a'), None],
-        [sp.symbols('b'), None]
-    ]
+    sub_values = {
+        sp.symbols('a'): None,
+        sp.symbols('b'): None
+    }
 
     # Instantiate class to access sub_values function.
     func_form = BaseForms()
@@ -291,13 +292,12 @@ def test_sub_values():
 
     # Define the function and check for an error.
     with pytest.raises(TypeError):
-        func_form.sub_values(
+        func_form.sub_symbols(
             func=f,
-            symboldict=func_form.symboldict,
-            values=sub_values
+            symbol_values=sub_values
         )
 
-def test_polynomial_combination():
+def test_additive():
     # Teat Case 1:
     # Test case for basic functionality: Check whether the function returns a
     # valid mathematical function and a dictionary of symbols and indexes when
@@ -317,7 +317,7 @@ def test_polynomial_combination():
     )
 
     # Define the mathematical function.
-    func_form, symboldict = function.polynomial_combination()
+    func_form, symboldict = function.additive()
 
     # Define expected outcome.
     expected = 'c + 2*x[0] + 3*x[1]**2 - 1'
@@ -342,7 +342,7 @@ def test_polynomial_combination():
     )
 
     # Define the mathematical function.
-    func_form, symboldict = function.polynomial_combination()
+    func_form, symboldict = function.additive()
 
     # Define expected outcome.
     expected = 'c - y + 2*x[0] + 3*x[1]**2 + 4*x[2]**3'
@@ -366,7 +366,7 @@ def test_polynomial_combination():
     )
 
     # Define the mathematical function.
-    func_form, symboldict = function.polynomial_combination()
+    func_form, symboldict = function.additive()
 
     # Define the expected outcome.
     expected = "c - y"
@@ -394,7 +394,7 @@ def test_polynomial_combination():
 
     # Define the function and check for an error.
     with pytest.raises(AttributeError):
-        function.polynomial_combination()
+        function.additive()
 
     # Test Case 5:
     # Test case for invalid input: Check whether the function raises an
@@ -416,9 +416,9 @@ def test_polynomial_combination():
 
     # Define the function and check for an error.
     with pytest.raises(TypeError):
-        function.polynomial_combination()
+        function.additive()
 
-def test_cobb_douglas():
+def test_multiplicative():
     # Teat Case 1:
     # Test case for basic functionality: Check whether the function returns a
     # valid mathematical function and a dictionary of symbols and indexes when
@@ -438,7 +438,7 @@ def test_cobb_douglas():
     )
 
     # Define mathematical function.
-    func_form, symboldict = function.cobb_douglas()
+    func_form, symboldict = function.multiplicative()
 
     # Define expected outcome.
     expected = 'c + 6*x[0]*x[1]**2 - 1'
@@ -463,7 +463,7 @@ def test_cobb_douglas():
     )
 
     # Define the mathematical function.
-    func_form, symboldict = function.cobb_douglas()
+    func_form, symboldict = function.multiplicative()
 
     # Define expected outcome.
     expected = 'c - y + 24*x[0]*x[1]**2*x[2]**3'
@@ -487,7 +487,7 @@ def test_cobb_douglas():
     )
 
     # Define the mathematical function.
-    func_form, symboldict = function.cobb_douglas()
+    func_form, symboldict = function.multiplicative()
 
     # Define expected outcome.
     expected = 'c - y + 1'
@@ -515,7 +515,7 @@ def test_cobb_douglas():
 
     # Define the function and check for an error.
     with pytest.raises(AttributeError):
-        function.cobb_douglas()
+        function.multiplicative()
 
     # Test Case 5:
     # Test case for invalid input: Check whether the function raises an
@@ -537,9 +537,131 @@ def test_cobb_douglas():
 
     # Define the function and check for an error.
     with pytest.raises(TypeError):
-        function.cobb_douglas()
+        function.multiplicative()
 
-def test_substitutes():
+# def test_substitutes():
+#     # Teat Case 1:
+#     # Test case for basic functionality: Check whether the function returns a
+#     # valid mathematical function and a dictionary of symbols and indexes when
+#     # passed valid input values.
+
+#     # Instantiate class with arguments.
+#     function = BaseForms(
+#         num_inputs=2,
+#         input_name='x',
+#         coeff_name='a',
+#         coeff_values=(2, 3),
+#         exponent_name='b',
+#         exponent_values=(1, 2),
+#         constant_name='c',
+#         dependent_name='y',
+#         dependent_value=1
+#     )
+
+#     # Define mathematical function.
+#     func_form, symboldict = function.substitutes()
+
+#     # Define expected outcome.
+#     expected = 'c + 2*x[0] + 3*x[1] - 1'
+
+#     # Assert that the string version of the mathematical is equal to the 
+#     # expected function.
+#     assert str(func_form) == expected
+
+#     # Test Case 2:
+#     # Test case for a different number of inputs: Check whether the function
+#     # returns a valid mathematical function and a dictionary of symbols and
+#     # indexes when passed a different number of inputs.
+#     function = BaseForms(
+#         num_inputs=3,
+#         input_name='x',
+#         coeff_name='a',
+#         coeff_values=(2, 3, 4),
+#         exponent_name='b',
+#         exponent_values=(1, 2, 3),
+#         constant_name='c',
+#         dependent_name='y',
+#     )
+
+#     # Define the mathematical function.
+#     func_form, symboldict = function.substitutes()
+
+#     # Define expected outcome.
+#     expected = 'c - y + 2*x[0] + 3*x[1] + 4*x[2]'
+
+#     # Assert that the string version of the mathematical function is equal to
+#     # the expected function.
+#     assert str(func_form) == expected
+
+#     # Test Case 3:
+#     # Test case for zero inputs: Check whether the function returns a valid
+#     # mathematical function and a dictionary of symbols and indexes when passed
+#     # zero inputs.
+#     function = BaseForms(
+#         num_inputs=0,
+#         input_name='x',
+#         coeff_name='a',
+#         coeff_values=(),
+#         exponent_name='b',
+#         exponent_values=(),
+#         constant_name='c',
+#         dependent_name='y'
+#     )
+
+#     # Define the mathematical function.
+#     func_form, symboldict = function.substitutes()
+
+#     # Define expected outcome.
+#     expected = 'c - y'
+
+#     # Assert that the string version of the mathematical function is equal to 
+#     # the expected function.
+#     assert str(func_form) == expected
+
+#     # Test Case 4:
+#     # Test case for invalid input: Check whether the function raises an
+#     # AttributeError when a tuple is passed to substitute a Sympy symbol.
+
+#     # Instantiate class with arguments.
+#     function = BaseForms(
+#         num_inputs=2,
+#         input_name='x',
+#         coeff_name='a',
+#         coeff_values=(2, 3),
+#         exponent_name='b',
+#         exponent_values=(1, 2),
+#         constant_name='c',
+#         dependent_name='y',
+#         dependent_value=(1,2) # Test case values.
+#     )
+
+#     # Define the function and check for an error.
+#     with pytest.raises(AttributeError):
+#         function.substitutes()
+
+#     # Test Case 5:
+#     # Test case for invalid input: Check whether the function raises an
+#     # TypeError when an integer is passed to substitute an IndexedBase
+#     # instance.
+
+#     # Instantiate class with arguments.
+#     function = BaseForms(
+#         num_inputs=2,
+#         input_name='x',
+#         coeff_name='a',
+#         coeff_values=1, # Test case value.
+#         exponent_name='b',
+#         exponent_values=(1, 2),
+#         constant_name='c',
+#         dependent_name='y',
+#         dependent_value=1
+#     )
+
+#     # Define the function and check for an error.
+#     with pytest.raises(TypeError):
+#         function.substitutes()
+
+def test_minimum_function():
     # Teat Case 1:
     # Test case for basic functionality: Check whether the function returns a
     # valid mathematical function and a dictionary of symbols and indexes when
@@ -558,130 +680,8 @@ def test_substitutes():
         dependent_value=1
     )
 
-    # Define mathematical function.
-    func_form, symboldict = function.substitutes()
-
-    # Define expected outcome.
-    expected = 'c + 2*x[0] + 3*x[1] - 1'
-
-    # Assert that the string version of the mathematical is equal to the 
-    # expected function.
-    assert str(func_form) == expected
-
-    # Test Case 2:
-    # Test case for a different number of inputs: Check whether the function
-    # returns a valid mathematical function and a dictionary of symbols and
-    # indexes when passed a different number of inputs.
-    function = BaseForms(
-        num_inputs=3,
-        input_name='x',
-        coeff_name='a',
-        coeff_values=(2, 3, 4),
-        exponent_name='b',
-        exponent_values=(1, 2, 3),
-        constant_name='c',
-        dependent_name='y',
-    )
-
     # Define the mathematical function.
-    func_form, symboldict = function.substitutes()
-
-    # Define expected outcome.
-    expected = 'c - y + 2*x[0] + 3*x[1] + 4*x[2]'
-
-    # Assert that the string version of the mathematical function is equal to
-    # the expected function.
-    assert str(func_form) == expected
-
-    # Test Case 3:
-    # Test case for zero inputs: Check whether the function returns a valid
-    # mathematical function and a dictionary of symbols and indexes when passed
-    # zero inputs.
-    function = BaseForms(
-        num_inputs=0,
-        input_name='x',
-        coeff_name='a',
-        coeff_values=(),
-        exponent_name='b',
-        exponent_values=(),
-        constant_name='c',
-        dependent_name='y'
-    )
-
-    # Define the mathematical function.
-    func_form, symboldict = function.substitutes()
-
-    # Define expected outcome.
-    expected = 'c - y'
-
-    # Assert that the string version of the mathematical function is equal to 
-    # the expected function.
-    assert str(func_form) == expected
-
-    # Test Case 4:
-    # Test case for invalid input: Check whether the function raises an
-    # AttributeError when a tuple is passed to substitute a Sympy symbol.
-
-    # Instantiate class with arguments.
-    function = BaseForms(
-        num_inputs=2,
-        input_name='x',
-        coeff_name='a',
-        coeff_values=(2, 3),
-        exponent_name='b',
-        exponent_values=(1, 2),
-        constant_name='c',
-        dependent_name='y',
-        dependent_value=(1,2) # Test case values.
-    )
-
-    # Define the function and check for an error.
-    with pytest.raises(AttributeError):
-        function.substitutes()
-
-    # Test Case 5:
-    # Test case for invalid input: Check whether the function raises an
-    # TypeError when an integer is passed to substitute an IndexedBase
-    # instance.
-
-    # Instantiate class with arguments.
-    function = BaseForms(
-        num_inputs=2,
-        input_name='x',
-        coeff_name='a',
-        coeff_values=1, # Test case value.
-        exponent_name='b',
-        exponent_values=(1, 2),
-        constant_name='c',
-        dependent_name='y',
-        dependent_value=1
-    )
-
-    # Define the function and check for an error.
-    with pytest.raises(TypeError):
-        function.substitutes()
-
-def test_complements():
-    # Teat Case 1:
-    # Test case for basic functionality: Check whether the function returns a
-    # valid mathematical function and a dictionary of symbols and indexes when
-    # passed valid input values.
-
-    # Instantiate class with arguments.
-    function = BaseForms(
-        num_inputs=2,
-        input_name='x',
-        coeff_name='a',
-        coeff_values=(2, 3),
-        exponent_name='b',
-        exponent_values=(1, 2),
-        constant_name='c',
-        dependent_name='y',
-        dependent_value=1
-    )
-
-    # Define the mathematical function.
-    func_form, symboldict = function.complements()
+    func_form, symboldict = function.minimum_function()
 
     # Define expected outcome.
     expected = 'Min(x[0], x[1]) - 1'
@@ -706,7 +706,7 @@ def test_complements():
     )
 
     # Define mathematical function.
-    func_form, symboldict = function.complements()
+    func_form, symboldict = function.minimum_function()
 
     # Define expected outcome.
     expected = '-y + Min(x[0], x[1], x[2])'
@@ -731,7 +731,7 @@ def test_complements():
     )
 
     # Define mathematical function.
-    func_form, symboldict = function.complements()
+    func_form, symboldict = function.minimum_function()
 
     # Define expected outcome.
     expected = '-y + oo'

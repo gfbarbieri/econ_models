@@ -28,7 +28,43 @@ class BaseForms():
     the inputs, define how form the inputs will take, define the functional form
     with multiple inputs, substitute symbols for any values passed into the
     FunctionalForms class, return both the final functional form and the 
-    symboldict.
+    symbol_dict.
+
+    Attributes
+    ----------
+    num_inputs : int
+        The number of input variables for the polynomial equation.
+
+    input_name : str
+        The base name for the input variables.
+
+    coeff_name : str
+        The base name for the coefficient variables.
+
+    coeff_values : {None, 'symbol', tuple}
+        The values to substitute for the coefficient variables. If 'symbol',
+        use the variables as symbols. If None, substitute with a tuple of 1s.
+
+    constant_name : str
+        The base name for the constant variable.
+
+    constant_value : {None, 'symbol', tuple}
+        The values to substitute for the constant variable. If 'symbol',
+        use the variable as a symbol. If None, substitute with 1.
+
+    exponent_name : str
+        The base name for the exponent variables.
+
+    exponent_values : {None, 'symbol', tuple}
+        The values to substitute for the exponent variables. If 'symbol',
+        use the variables as symbols. If None, substitute with a tuple of 1s.
+
+    dependent_name : str
+        The base name for the dependent variable.
+
+    dependent_value : {None, 'symbol', tuple}
+        The values to substitute for the dependent variable. If 'symbol',
+        use the variable as a symbol. If None, substitute with 1.
 
     Parameters
     ----------
@@ -75,7 +111,7 @@ class BaseForms():
 
     Construct the functional form of a Cobb-Douglas function with two inputs.
     >>> func_forms = BaseForms()
-    >>> cobb_douglas, symboldict = func_forms.cobb_douglas()
+    >>> cobb_douglas, symbol_dict = func_forms.cobb_douglas()
     >>> print(cobb_douglas)
     C - Y + beta[0]*beta[1]*x[0]**alpha[0]*x[1]**alpha[1]
 
@@ -88,13 +124,13 @@ class BaseForms():
     ... coeff_name='beta', coeff_values=(0.5, 0.7),
     ... dependent_name='Y', dependent_value=100,
     ... constant_name='C')
-    >>> substitutes, symboldict = func_forms.substitutes()
+    >>> substitutes, symbol_dict = func_forms.substitutes()
     >>> print(substitutes)
     0.5*k[0] + 0.7*k[1] + 10 - Y
 
     Construction the functional form of a CES function.
     >>> func_forms = BaseForms()
-    >>> ces, symboldict = func_forms.ces()
+    >>> ces, symbol_dict = func_forms.ces()
     >>> print(ces)
     C - Y + (beta[0]*x[0]**alpha + beta[1]*x[1]**alpha)**(1/alpha)
     """
@@ -102,17 +138,18 @@ class BaseForms():
     def __init__(
         self,
         num_inputs=2, input_name='x',
-        coeff_name='beta', coeff_values='symbol',
-        exponent_name='alpha', exponent_values='symbol',
-        dependent_name='Y', dependent_value='symbol',
-        constant_name='C', constant_value='symbol'
+        coeff_name='beta', coeff_values='symbols',
+        exponent_name='alpha', exponent_values='symbols',
+        dependent_name='Y', dependent_value='symbols',
+        constant_name='C', constant_value='symbols'
     ):
         # Check that number of inputs passed is greater than 0.
         if num_inputs < 0:
             raise Exception(
-                f"{num_inputs} inputs passed. Number of inputs must be greater than zero."
+                f"Negative inputs passed: {num_inputs}."
             )
 
+        # Set attributes.
         self.num_inputs = num_inputs
         self.input_name = input_name
         self.coeff_name = coeff_name
@@ -124,27 +161,38 @@ class BaseForms():
         self.constant_name = constant_name
         self.constant_value = constant_value
 
-        # Create symbol_dict used for most functional forms, with the exception
-        # of CES functions. In CES functions, exponents are symbols instead of
-        # IndexedBase.
-        self.symboldict = {
-            'coefficient': sp.IndexedBase(f"{self.coeff_name}"),
+        # Create the symbol_dict used for most functional forms. If num_inputs
+        # is equal to 1, then the variables are not indexed and are only a
+        # symbol object. If num_inputs > 1, then variables are indexed and are
+        # indexed base objects.
+        self.symbol_dict = {
             'constant': sp.symbols(f"{self.constant_name}"),
             'dependent': sp.symbols(f"{self.dependent_name}"),
-            'exponent': sp.IndexedBase(f"{self.exponent_name}"),
             'i': sp.symbols('i', cls=sp.Idx),
+            'coefficient': sp.IndexedBase(f"{self.coeff_name}"),
+            'exponent': sp.IndexedBase(f"{self.exponent_name}"),
             'input': sp.IndexedBase(f"{self.input_name}")
+        }
+
+        # Define a dictionary of symbols to strings.
+        self.symbol_str_dict = {
+            str(self.symbol_dict['constant']): self.symbol_dict['constant'],
+            str(self.symbol_dict['dependent']): self.symbol_dict['dependent'],
+            str(self.symbol_dict['i']): self.symbol_dict['i'],
+            str(self.symbol_dict['coefficient']): self.symbol_dict['coefficient'],
+            str(self.symbol_dict['exponent']): self.symbol_dict['exponent'],
+            str(self.symbol_dict['input']): self.symbol_dict['input']
         }
 
         # Set the range for indexed inputs, with the exception of complements
         # function.
-        self.irange = (self.symboldict['i'], 0, self.num_inputs - 1)
+        self.irange = (self.symbol_dict['i'], 0, self.num_inputs - 1)
 
     ##########################################################################
     ## Substitute Values
     ##########################################################################
 
-    def sub_values(self, func, symboldict, values):
+    def sub_symbols(self, func, symbol_values, symbol_dict=None):
         """
         Substitute symbol values into a function.
 
@@ -153,12 +201,12 @@ class BaseForms():
         func : SymPy expression
             The function to substitute values into.
 
-        symboldict : dict
-            A dictionary of the functions symbols.
+        values : dict
+            A dict of symbol-value pairs to substitute into the function.
 
-        values : list
-            A list of list of symbol-value pairs to substitute into the function.
-            If the value is None, the symbol is substituted with 1s.
+        symbol_dict : dict, optional
+            A dict of symbols to substitute into the function. If None, then    
+            the default symbol_dict is used. Default is None.
 
         Returns
         -------
@@ -166,201 +214,179 @@ class BaseForms():
             The function with symbol values substituted in.
         """
 
-        # Check that the symbols in the symbol-value pairs are valid. That is,
-        # that they are included in the symboldict.
-        symbol_pairs = [pair[0] for pair in values]
+        # If no custom symbol_dict is given, then use the default symbol_dict.
+        if symbol_dict == None:
+            symbol_dict = self.symbol_dict
 
-        if not all([sym in symboldict.keys() for sym in symbol_pairs]):
+        # Confirm the symbol_dict contains the symbols passed in the values
+        # dictionary. Otherwise, raise an exception.
+        symbols = list(symbol_values.keys())
+
+        if not all([sym in symbol_dict.values() for sym in symbols]):
             raise Exception(f"Some symbols missing from symbol_dict.")
 
-        # Construct the substitution dictionary. It will be a dictionary where
-        # they key's are the symbols in the function and the values are the
-        # values subsituted for that symbol.
-        sub_dict = {}
+        # Finalize the values dictionary:
+        #   1. If the value is 'symbols', then we don't want to make any
+        #   substitutions since the default functional form is already in terms
+        #   of symbols.
+        #   2. If the value is None, then we want to substitute the symbol
+        #   object or IndexedBase object with 1.
+        #   3. If the value is a tuple which includes None, then we want to
+        #   substitute None in the tuple with 1. This will be used to subsitute
+        #   the value of a symbol or IndexedBase object with 1.
+        #   4. If the value is a tuple for an IndexedBase object and the tuple
+        #   contains a mix of numbers, None types, and 'symbol', then the
+        #   'symbol' should be substituted with the symbol object for the index
+        #   in the tuple and the None types should be substituted with 1.
+        #   5. Otherwise, substitute symbol with the passed values.
 
-        for sym, value in values:
-            # If the value passed is None, then we want to replace that symbol with
-            # an 1.
-            if value == None:
-                if type(symboldict[sym]) == sp.tensor.indexed.IndexedBase:
-                    sub_dict.update({symboldict[sym]: tuple([1]*self.num_inputs)})
-                elif type(symboldict[sym]) == sp.core.symbol.Symbol:
-                    sub_dict.update({symboldict[sym]: 1})
-            # If the value is not None and not equal to 'symbol', then replace
-            # the symbol with the passed values.
-            elif value is not None and value != 'symbol':
-                if sym == 'input':
-                    sub_dict.update(
-                        {symboldict['input'][str(i)]: value[i] for i in range(len(value)) if value[i] is not None}
-                    )
-                else:
-                    sub_dict.update({symboldict[sym]: value})
+        for symbol, value in symbol_values.copy().items():
+            if value == 'symbols':
+                symbol_values.pop(symbol)
+            elif value == None:
+                if type(symbol) == sp.tensor.indexed.IndexedBase:
+                    symbol_values.update({symbol : tuple([1]*self.num_inputs)})
+                elif type(symbol) == sp.core.symbol.Symbol:
+                    symbol_values.update({symbol : 1})
+            elif type(value) == tuple:
+                if None in value:
+                    symbol_values.update({symbol : tuple([1 if val == None else val for val in value])})
+                elif 'symbol' in value:
+                    symbol_values.update({symbol : tuple([symbol[i] if val == 'symbol' else val for i, val in enumerate(value)])})
 
-        # Substitute symbols for values using the substitution dictionary.
-        func = func.subs(sub_dict)
+        func = func.subs(symbol_values)
 
-        # Return the final function with the values substituted for symbols.
         return func
 
     ##########################################################################
     ## Functional Forms
     ##########################################################################
 
-    def polynomial_combination(self):
+    def additive(self):
         """
-        Construct a polynomial function.
+        Construct an additive function where inputs are multiplied by a
+        coefficient and summed together with a constant. The functional form
+        is: C + beta[0]*x[0] + beta[1]*x[1] + ... + beta[n]*x[n] - Y. Each input
+        is included only once, multiplied by one coefficient and one power. The
+        dependent variable is included in the functional form as the function
+        is a homogenous function.
 
         Returns
         -------
         func_form : sympy expression
             The functional form of the Cobb-Douglas production function.
         
-        symboldict : dict
+        symbol_dict : dict
             A dictionary of the symbols and indexes used in the function.
         """
 
-        # Define the functional form of the inputs for a polynomial equation:
-        # cX^a + dX^b.
+        # Define the functional form of the inputs for an additive function.
         input_form = (
-            self.symboldict['coefficient'][self.symboldict['i']] *
-            self.symboldict['input'][self.symboldict['i']]**
-            self.symboldict['exponent'][self.symboldict['i']]
+            self.symbol_dict['coefficient'][self.symbol_dict['i']] *
+            self.symbol_dict['input'][self.symbol_dict['i']]**
+            self.symbol_dict['exponent'][self.symbol_dict['i']]
         )
     
-        # Define the function form.
+        # Define the final function form.
         func_form = (
             sp.Sum(input_form, self.irange) +
-            self.symboldict['constant'] -
-            self.symboldict['dependent']
+            self.symbol_dict['constant'] -
+            self.symbol_dict['dependent']
         ).doit()
 
-        # Substitute the symbols in the function with the passed
-        func_form_sub = self.sub_values(
+        # Substitute the symbols in the function with any passed values for
+        # the symbols.
+        func_form_sub = self.sub_symbols(
             func=func_form,
-            symboldict=self.symboldict,
-            values=[
-                ['coefficient', self.coeff_values],
-                ['exponent', self.exponent_values],
-                ['constant', self.constant_value],
-                ['dependent', self.dependent_value]
-            ]
+            symbol_values={
+                self.symbol_dict['coefficient']: self.coeff_values,
+                self.symbol_dict['exponent']: self.exponent_values,
+                self.symbol_dict['constant']: self.constant_value,
+                self.symbol_dict['dependent']: self.dependent_value
+            }
         )
 
-        # Return the functional form and the symboldict.
-        return func_form_sub, self.symboldict
+        return func_form_sub, self.symbol_dict
 
-    def cobb_douglas(self):
+    def multiplicative(self):
         """
-        Construct a Cobb-Douglas function: cX^a*dY^b.
+        Construct a multiplicative function: cX^a*dY^b. The functional form
+        is: c[0]*x[0]^a[0]*d[0]*y[0]^b[0] + ... + c[n]*x[n]^a[n]*d[n]*y[n]^b[n]
+        - Y. Each input is included only once, multiplied by one coefficient
+        and one power. The dependent variable is included in the functional
+        form as the function is a homogenous function.
 
         Returns
         -------
         func_form : sympy expression
-            The functional form of the Cobb-Douglas production function.
+            The functional form of the multiplicative function.
         
-        symboldict : dict
+        symbol_dict : dict
             A dictionary of the symbols and indexes used in the function.
         """
 
-        # Define the form of the inputs in a Cobb-Douglas function: cX^a*dY^b.
+        # Define the functional form of the inputs for a multiplicative function.
         input_form = (
-            self.symboldict['coefficient'][self.symboldict['i']] *
-            self.symboldict['input'][self.symboldict['i']]**
-            self.symboldict['exponent'][self.symboldict['i']]
+            self.symbol_dict['coefficient'][self.symbol_dict['i']] *
+            self.symbol_dict['input'][self.symbol_dict['i']]**
+            self.symbol_dict['exponent'][self.symbol_dict['i']]
         )
 
-        # Define the function form.
+        # Define the function form: cX^a*dY^b.
         func_form = (
             sp.Product(input_form, self.irange)  +
-            self.symboldict['constant'] -
-            self.symboldict['dependent']
+            self.symbol_dict['constant'] -
+            self.symbol_dict['dependent']
         ).doit()
 
-        # Substitute values for symbols.
-        func_form_sub = self.sub_values(
+        # # Substitute the symbols in the function with any passed values for
+        # # the symbols.
+        func_form_sub = self.sub_symbols(
             func=func_form,
-            symboldict=self.symboldict,
-            values=[
-                ['coefficient', self.coeff_values],
-                ['exponent', self.exponent_values],
-                ['constant', self.constant_value],
-                ['dependent', self.dependent_value]
-            ]
+            symbol_values={
+                self.symbol_dict['coefficient']: self.coeff_values,
+                self.symbol_dict['exponent']: self.exponent_values,
+                self.symbol_dict['constant']: self.constant_value,
+                self.symbol_dict['dependent']: self.dependent_value
+            }
         )
 
-        # Return the functional form and the symboldict.
-        return func_form_sub, self.symboldict
+        return func_form_sub, self.symbol_dict
 
-    def substitutes(self):
+    def minimum_function(self):
         """
-        Construct a function with perfect substitutes inputs.
-
-        A function with perfect substitutes is a linear combination of inputs,
-        such that each input can be completely substituted for the other without
-        any change in output.
+        Construct a minimum function of inputs: \min{x_0, x_1, x_2,..., x_n}.
 
         Returns
         -------
         func_form : sympy expression
-            The functional form of the production function with perfect
-            substitutes.
-
-        symboldict : dict
-            A dictionary of the symbols and indexes used in the function.
-
-        Notes
-        -----
-        This function makes use of the `polynomial_combination` function to
-        create the functional form of a function with perfect substitutes. Once
-        exponent_values are set, they will remain None.
-        """
-
-        # Use the polynomial_combination function without exponents to create a
-        # form for perfect substitutes.
-        self.exponent_values = None
+            The functional form of the minimum function.
     
-        func_form, symboldict = self.polynomial_combination()
-
-        # Return the functional form and the symboldict.
-        return func_form, symboldict
-
-    def complements(self):
-        """
-        Construct a function for perfect complement inputs.
-
-        Returns
-        -------
-        func_form : sympy expression
-            The functional form for the production function
-    
-        symboldict : dict
+        symbol_dict : dict
             The dictionary of the symbols and indexes used in the function
         """
         
-        # Define the form of the inputs to be the minimum of the different
-        # linear terms: min{x_1, x_2, x_3,..., x_n}.
+        # Define the form of the inputs to be the minimum.
         input_form = sp.Min(
-            *[self.symboldict['input'][self.symboldict['i']] for self.symboldict['i'] in range(self.num_inputs)]
+            *[self.symbol_dict['input'][i] for i in range(self.num_inputs)]
         )
 
         # Define the functional form.
-        func_form = input_form - self.symboldict['dependent']
+        func_form = input_form - self.symbol_dict['dependent']
 
         # Substitute the symbols in the function with the passed values or with a
         # value of 1 if None.
-        func_form_sub = self.sub_values(
+        func_form_sub = self.sub_symbols(
             func=func_form,
-            symboldict=self.symboldict,
-            values=[
-                ['coefficient', self.coeff_values],
-                ['exponent', self.exponent_values],
-                ['constant', self.constant_value],
-                ['dependent', self.dependent_value]
-            ]
+            symbol_values={
+                self.symbol_dict['coefficient']: self.coeff_values,
+                self.symbol_dict['exponent']: self.exponent_values,
+                self.symbol_dict['constant']: self.constant_value,
+                self.symbol_dict['dependent']: self.dependent_value
+            }
         )
 
-        # Return the functional form and the symboldict.
-        return func_form_sub, self.symboldict
+        return func_form_sub, self.symbol_dict
 
     def ces(self):
         """
@@ -371,39 +397,39 @@ class BaseForms():
         func_form : sympy expression
             The CES function expression.
 
-        symboldict : dict
+        symbol_dict : dict
             A dictionary of the symbols and indexes used in the function expression.
         """
 
-        # Edit symbol_dict to convert exponents a symbol from IndexedBase.
-        self.symboldict['exponent'] = sp.symbols(f"{self.exponent_name}")
+        # For this version of the CES function, exponents are not indexed.
+        # A new exponent symbol is used instead of the symbol_dict.
+        exponent = sp.symbols(f"{self.exponent_name}")
 
         # Define the form of the inputs into CES function.
         input_form = (
-            self.symboldict['coefficient'][self.symboldict['i']] *
-            self.symboldict['input'][self.symboldict['i']]**self.symboldict['exponent']
+            self.symbol_dict['coefficient'][self.symbol_dict['i']] *
+            self.symbol_dict['input'][self.symbol_dict['i']]#**self.symbol_dict['exponent']
         )
 
         # Define the functional form.
         func_form = (
-            sp.Sum(input_form, self.irange)**(1/self.symboldict['exponent']) +
-            self.symboldict['constant'] - self.symboldict['dependent']
+            sp.Sum(input_form, self.irange)+#**(1/self.symbol_dict['exponent']) +
+            self.symbol_dict['constant'] -
+            self.symbol_dict['dependent']
         ).doit()
 
         # Substitute values for the symbols.
-        func_form_sub = self.sub_values(
+        func_form_sub = self.sub_symbols(
             func=func_form,
-            symboldict=self.symboldict,
-            values=[
-                ['coefficient', self.coeff_values],
-                ['exponent', self.exponent_values],
-                ['constant', self.constant_value],
-                ['dependent', self.dependent_value]
-            ]
+            symbol_values={
+                self.symbol_dict['coefficient']: self.coeff_values,
+                self.symbol_dict['exponent']: exponent,
+                self.symbol_dict['constant']: self.constant_value,
+                self.symbol_dict['dependent']: self.dependent_value
+            }
         )
 
-        # Return the functional form and the symboldict.
-        return func_form_sub, self.symboldict
+        return func_form_sub, self.symbol_dict
 
     def quasi_linear():
         """
