@@ -99,7 +99,7 @@ class Utility(BaseForms):
             'ces': self.ces,
         }
         
-        self.function, self.symboldict = func_form_dict[func_form]()
+        self.function, self.symbol_dict = func_form_dict[func_form]()
 
     def get_utility(self, input_values, constant):
         """
@@ -129,7 +129,7 @@ class Utility(BaseForms):
         """
 
         # Solve for utility.
-        utility_expr = sp.solve(self.function, self.symboldict['dependent'])
+        utility_expr = sp.solve(self.function, self.symbol_dict['dependent'])
 
         # Substitute values for symbols in the utility funciton.
         utility_expr_sub = self.sub_symbols(
@@ -216,9 +216,9 @@ class Utility(BaseForms):
 
         # Solve the utility function such that the dependent variable is on the
         # LHS and interms of all other variables.
-        utility_expr = sp.solve(utility_expr, self.symboldict['dependent'])[0]
+        utility_expr = sp.solve(utility_expr, self.symbol_dict['dependent'])[0]
 
         # Take the first derivative with respect to the indexed good.
-        mu_expr = sp.diff(utility_expr, self.symboldict['input'][indx])
+        mu_expr = sp.diff(utility_expr, self.symbol_dict['input'][indx])
 
         return mu_expr

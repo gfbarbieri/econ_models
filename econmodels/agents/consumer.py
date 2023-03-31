@@ -17,6 +17,8 @@ A class representing a consumer with a utility funciton and budget constraint.
 import sympy as sp
 from ..functional_forms.utility import Utility
 from ..functional_forms.constraint import Input_Constraint
+from ..utils.solvers import lagrangian
+from ..utils.solvers import is_linear
 
 ##########################################################################
 ## Representation of a Consumer
@@ -58,7 +60,7 @@ class Consumer():
     >>> consumer.opt_values_dict
     """
 
-    def __init__(self, num_goods=2, util_form='cobb-douglas'):
+    def __init__(self, num_goods=2, util_form='multiplicative'):
         """
         Initializes the Consumer object by defining the number of goods, the consumer's utility function, and the budget constraint.
 
@@ -92,13 +94,13 @@ class Consumer():
             num_inputs=num_goods,
             coeff_name='p_',
             exponent_values=None,
-            constant_name='B'
+            constant_value=0
         )
 
         # Define a dictionary of symbols to strings.
         self.sym_str_dict = {}
 
-        for sym in (list(self.constraint.symboldict.values()) + list(self.utility.symboldict.values())):
+        for sym in (list(self.constraint.symbol_dict.values()) + list(self.utility.symbol_dict.values())):
             self.sym_str_dict[str(sym)] = sym
     
         # Define an empty optimal value dictionary.
@@ -108,10 +110,6 @@ class Consumer():
         """
         Finds the optimal values of goods to purchase given the budget constraint,
         using the Lagrangian method.
-                
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -123,41 +121,17 @@ class Consumer():
         >>> consumer.maximize_utility()
         >>> consumer.opt_values_dicts
         """
-
-        # Solve for utility in terms of the other variables and values.
-        util = sp.solve(
-            self.utility.function,
-            self.utility.symboldict['dependent']
-        )[0]
-
-        # Create a symbol for the Lagrangian lambda.
-        l = sp.symbols('lambda')
-
-        # Define the Lagrangian: `U(x_i) + \lambda(M - B(x_i))`.
-        L = util + l * self.constraint.function
-
-        # Find the FOC for each good.
-        Lx = [
-            sp.diff(L,self.utility.symboldict['input'][i])
-            for i in range(self.num_goods)
-        ]
-
-        # Find the FOC for lambda.
-        Ll = [sp.diff(L, l)]
-
-        # Define the system of FOCs.
-        Li = Lx + Ll
-
-        # Define the variables we want to find optimal values for as a list. The
-        # variables are each good (input) and the lambda.
-        i = [
-            self.utility.symboldict['input'][i]
-            for i in range(self.num_goods)
-        ] + [l]
     
-        # Solve for the optimal values of goods and lambda and assign them to
-        # a dictionary.
-        self.opt_values_dict = sp.solve(Li, i, dict=True)[0]
+        # If it is jointly linear, a unique solution may not exist using the
+        # langrangian method.
+        if is_linear(self.utility):
+            raise NotImplementedError("Linear functions are not yet supported.")
+
+        # Use langrangian method to find optimal values.
+        self.opt_values_dict = lagrangian(
+            objective=self.utility,
+            constraint=self.constraint
+        )
 
     def get_demand(self, indx):
         """
@@ -178,20 +152,22 @@ class Consumer():
         --------
         >> consumer = Consumer()
         >> consumer.maximize_utility()
-        >> consumer.get_demand(index=0)
+        >> consumer.get_demand(indx=0)
         """
 
+        # If the optimal values dictionary is empty, raise an error. Optimal
+        # values must be determined first.
         if not self.opt_values_dict:
             raise AttributeError("Run max_utility() first.")
         
         # Get the symbol for the indexed input.
-        var = self.utility.symboldict['input']
+        var = self.utility.symbol_dict['input']
 
         # Set demand equal to the optimal value of the indexed input as a
         # homogenous equation.
-        demand = (
-            self.opt_values_dict[var[indx]] -
-            self.utility.symboldict['input'][indx]
+        demand = sp.Eq(
+            self.utility.symbol_dict['input'][indx],
+            self.opt_values_dict[self.utility.symbol_dict['input'][indx]]
         )
         
         return demand
@@ -261,7 +237,7 @@ class Consumer():
 
         # Get demand for the indexed input.
         d = self.get_demand(indx=input_indx)
-        d_x = sp.solve(d, self.utility.symboldict['input'][input_indx])[0]
+        d_x = sp.solve(d, self.utility.symbol_dict['input'][input_indx])[0]
 
         # Get the derivative of demand with respect to the variable.
         if type(sym) == sp.tensor.indexed.IndexedBase:
@@ -272,7 +248,7 @@ class Consumer():
         # If variable value or quantity value are None, set them equal to the
         # symbols.
         if point == 'symbol':
-            point = (self.utility.symboldict['input'][input_indx], sym)
+            point = (self.utility.symbol_dict['input'][input_indx], sym)
 
         # Calculate the elasticity.
         elas = f * point[1]/point[0]
