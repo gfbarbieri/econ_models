@@ -1,4 +1,4 @@
-# econmodels.agent_functions.utility_functions
+# econmodels.agent_functions.utility
 # A class representing a utility function used by economic agents.
 #
 # Author:   Greg Barbieri
@@ -84,11 +84,11 @@ class Utility(BaseForms):
         
         # Call parent class.
         super().__init__(
-            num_inputs = num_inputs, input_name = input_name,
-            coeff_name = coeff_name, coeff_values = coeff_values,
-            exponent_name = exponent_name, exponent_values = exponent_values,
-            dependent_name = dependent_name, dependent_value = dependent_value,
-            constant_name = constant_name, constant_value=constant_value
+            num_inputs=num_inputs, input_name=input_name,
+            coeff_name=coeff_name, coeff_values=coeff_values,
+            exponent_name=exponent_name, exponent_values=exponent_values,
+            dependent_name=dependent_name, dependent_value=dependent_value,
+            constant_name=constant_name, constant_value=constant_value
         )
 
         # Set utility function using a dictionary dispatcher.
@@ -135,7 +135,7 @@ class Utility(BaseForms):
         utility_expr_sub = self.sub_symbols(
             func=utility_expr[0],
             symbol_values={
-                self.symbol_dict['input']: input_values,
+                self.symbol_dict['inputs']: input_values,
                 self.symbol_dict['constant']: constant
             }
         )
@@ -219,6 +219,6 @@ class Utility(BaseForms):
         utility_expr = sp.solve(utility_expr, self.symbol_dict['dependent'])[0]
 
         # Take the first derivative with respect to the indexed good.
-        mu_expr = sp.diff(utility_expr, self.symbol_dict['input'][indx])
+        mu_expr = sp.diff(utility_expr, self.symbol_dict['inputs'][indx])
 
         return mu_expr

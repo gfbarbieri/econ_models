@@ -85,14 +85,16 @@ class Consumer():
         # Define the consumer's utility function.
         self.utility = Utility(
             num_inputs=num_goods,
-            constant_name='C',
-            func_form=util_form
+            func_form=util_form,
+            coeff_values='symbols',
+            exponent_values=(1,1),
+            constant_value=0
         )
 
         # Define the consumer's budget constraint.
         self.constraint = Input_Constraint(
             num_inputs=num_goods,
-            coeff_name='p_',
+            coeff_name='p',
             exponent_values=None,
             constant_value=0
         )
@@ -121,11 +123,6 @@ class Consumer():
         >>> consumer.maximize_utility()
         >>> consumer.opt_values_dicts
         """
-    
-        # If it is jointly linear, a unique solution may not exist using the
-        # langrangian method.
-        if is_linear(self.utility):
-            raise NotImplementedError("Linear functions are not yet supported.")
 
         # Use langrangian method to find optimal values.
         self.opt_values_dict = lagrangian(
@@ -161,13 +158,13 @@ class Consumer():
             raise AttributeError("Run max_utility() first.")
         
         # Get the symbol for the indexed input.
-        var = self.utility.symbol_dict['input']
+        var = self.utility.symbol_dict['inputs']
 
         # Set demand equal to the optimal value of the indexed input as a
         # homogenous equation.
         demand = sp.Eq(
-            self.utility.symbol_dict['input'][indx],
-            self.opt_values_dict[self.utility.symbol_dict['input'][indx]]
+            self.utility.symbol_dict['inputs'][indx],
+            self.opt_values_dict[self.utility.symbol_dict['inputs'][indx]]
         )
         
         return demand
@@ -237,7 +234,7 @@ class Consumer():
 
         # Get demand for the indexed input.
         d = self.get_demand(indx=input_indx)
-        d_x = sp.solve(d, self.utility.symbol_dict['input'][input_indx])[0]
+        d_x = sp.solve(d, self.utility.symbol_dict['inputs'][input_indx])[0]
 
         # Get the derivative of demand with respect to the variable.
         if type(sym) == sp.tensor.indexed.IndexedBase:
@@ -248,7 +245,7 @@ class Consumer():
         # If variable value or quantity value are None, set them equal to the
         # symbols.
         if point == 'symbol':
-            point = (self.utility.symbol_dict['input'][input_indx], sym)
+            point = (self.utility.symbol_dict['inputs'][input_indx], sym)
 
         # Calculate the elasticity.
         elas = f * point[1]/point[0]

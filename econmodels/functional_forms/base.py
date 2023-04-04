@@ -166,12 +166,12 @@ class BaseForms():
         # symbol object. If num_inputs > 1, then variables are indexed and are
         # indexed base objects.
         self.symbol_dict = {
-            'constant': sp.symbols(f"{self.constant_name}"),
-            'dependent': sp.symbols(f"{self.dependent_name}"),
+            'constant': sp.symbols(f"{self.constant_name}", real=True),
+            'dependent': sp.symbols(f"{self.dependent_name}", real=True),
             'i': sp.symbols('i', cls=sp.Idx),
-            'coefficient': sp.IndexedBase(f"{self.coeff_name}"),
-            'exponent': sp.IndexedBase(f"{self.exponent_name}"),
-            'input': sp.IndexedBase(f"{self.input_name}")
+            'coefficient': sp.IndexedBase(f"{self.coeff_name}", real=True),
+            'exponent': sp.IndexedBase(f"{self.exponent_name}", real=True),
+            'inputs': sp.IndexedBase(f"{self.input_name}", real=True)
         }
 
         # Define a dictionary of symbols to strings.
@@ -181,7 +181,7 @@ class BaseForms():
             str(self.symbol_dict['i']): self.symbol_dict['i'],
             str(self.symbol_dict['coefficient']): self.symbol_dict['coefficient'],
             str(self.symbol_dict['exponent']): self.symbol_dict['exponent'],
-            str(self.symbol_dict['input']): self.symbol_dict['input']
+            str(self.symbol_dict['inputs']): self.symbol_dict['inputs']
         }
 
         # Set the range for indexed inputs, with the exception of complements
@@ -283,7 +283,7 @@ class BaseForms():
         # Define the functional form of the inputs for an additive function.
         input_form = (
             self.symbol_dict['coefficient'][self.symbol_dict['i']] *
-            self.symbol_dict['input'][self.symbol_dict['i']]**
+            self.symbol_dict['inputs'][self.symbol_dict['i']]**
             self.symbol_dict['exponent'][self.symbol_dict['i']]
         )
     
@@ -329,7 +329,7 @@ class BaseForms():
         # function.
         input_form = (
             self.symbol_dict['coefficient'][self.symbol_dict['i']] *
-            self.symbol_dict['input'][self.symbol_dict['i']]**
+            self.symbol_dict['inputs'][self.symbol_dict['i']]**
             self.symbol_dict['exponent'][self.symbol_dict['i']]
         )
 
@@ -372,7 +372,7 @@ class BaseForms():
         
         # Define the form of the inputs to be the minimum.
         input_form = sp.Min(
-            *[self.symbol_dict['coefficient'][i]*self.symbol_dict['input'][i] for i in range(self.num_inputs)]
+            *[self.symbol_dict['coefficient'][i]*self.symbol_dict['inputs'][i] for i in range(self.num_inputs)]
         )
 
         # Define the functional form.
@@ -413,7 +413,7 @@ class BaseForms():
         # Define the form of the inputs into CES function.
         input_form = (
             self.symbol_dict['coefficient'][self.symbol_dict['i']] *
-            self.symbol_dict['input'][self.symbol_dict['i']]**exponent
+            self.symbol_dict['inputs'][self.symbol_dict['i']]**exponent
         )
 
         # Define the functional form.
